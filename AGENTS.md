@@ -216,8 +216,17 @@ Keep `ConvolutionDemo` (and any future interactive modules) scoped cleanly until
 1. Create an `.mdx` file under `src/content/lessons/<track>/<kebab-case-slug>.mdx` following `docs/templates/lesson-template.mdx`.
 2. Ensure all required metadata (`title`, `description`, `track`, `difficulty`, `estimatedMinutes`, `order`, `tags`, `status`) passes `src/content.config.ts`.
 3. Use `getLessonHref('<track>/<slug>')`, `getTrackHref('<track>')`, or `withBase()` for internal links.
-4. Keep SVG diagrams accessible (`role="img"`, `<title>`, `<desc>`, `aria-labelledby`, camelCase JSX attributes).
-5. Set `status: "published"` only after all 11 sections, `KnowledgeCheck`, and build/preview checks pass.
+4. Keep manually labeled `Previous:` / `Next:` links in Section 11 consistent with the globally sorted published lesson order (track stage ascending, then `order` ascending), and verify adjacent lessons when inserting or appending a lesson.
+5. Keep SVG diagrams accessible (`role="img"`, `<title>`, `<desc>`, `aria-labelledby`, camelCase JSX attributes):
+   - Use `<DiagramCaption label="Figure 1" caption="...">` as the single outer wrapper around `<svg>` (via its slot). Do **not** wrap `<DiagramCaption>` in another `<figure>`, and do **not** add a second caption outside it.
+   - **MDX inline SVG text rule:** Literal text inside SVG elements such as `<title>`, `<desc>`, `<text>`, or `<tspan>` can be parsed as Markdown paragraph content by MDX, injecting invalid `<p>` elements inside `<svg>` in the generated HTML and causing HTML parsers to close `<svg>` early. Always use JSX string expressions for literal text children where required, for example:
+     ```mdx
+     <title>{"Diagram title"}</title>
+     <desc>{"A clear diagram description."}</desc>
+     <text x="20" y="30">{"Visible SVG label"}</text>
+     ```
+   - Do **not** assume that a successful source-level check (`astro check` or `tsc --noEmit`) guarantees valid generated SVG HTML. After `npm run build`, always inspect the built HTML under `dist/lessons/` to confirm zero `<p>` tags exist inside `<svg>` elements.
+6. Set `status: "published"` only after all 11 sections, `KnowledgeCheck`, built-HTML SVG checks, and build/preview checks pass.
 
 ### Rules for navigation, search, and storage
 - Roadmap stages must link only to implemented tracks or clearly marked planned sections.

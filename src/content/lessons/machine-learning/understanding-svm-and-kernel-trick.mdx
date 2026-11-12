@@ -56,12 +56,8 @@ In 2D, a linear decision boundary is a straight line; in 3D, a flat plane; in hi
     role="img"
     aria-labelledby="svm-diagram-title svm-diagram-desc"
   >
-    <title id="svm-diagram-title">
-      Maximum-margin linear boundary vs. nonlinear XOR pattern
-    </title>
-    <desc id="svm-diagram-desc">
-      Two side-by-side 2D scatter plots. Left plot shows Class A circles and Class B diamonds separated by a line with dashed margin bands and ringed closest points. Right plot shows a four-quadrant XOR layout where diagonal pairs share a class.
-    </desc>
+    <title id="svm-diagram-title">{"Maximum-margin linear boundary vs. nonlinear XOR pattern"}</title>
+    <desc id="svm-diagram-desc">{"Two side-by-side 2D scatter plots. Left plot shows Class A circles and Class B diamonds separated by a line with dashed margin bands and ringed closest points. Right plot shows a four-quadrant XOR layout where diagonal pairs share a class."}</desc>
 
     {/* Left panel */}
     <rect
@@ -74,9 +70,7 @@ In 2D, a linear decision boundary is a straight line; in 3D, a flat plane; in hi
       stroke="var(--color-border-strong)"
       strokeWidth="1.5"
     />
-    <text x="32" y="40" fontSize="13.5" fontWeight="700" fill="var(--color-text)">
-      Linearly Separable Data
-    </text>
+    <text x="32" y="40" fontSize="13.5" fontWeight="700" fill="var(--color-text)">{"Linearly Separable Data"}</text>
 
     {/* Margin band & boundary */}
     <line x1="70" y1="226" x2="246" y2="56" stroke="var(--color-accent)" strokeWidth="1.5" strokeDasharray="5 4" />
@@ -98,9 +92,7 @@ In 2D, a linear decision boundary is a straight line; in 3D, a flat plane; in hi
     <rect x="246" y="198" width="11" height="11" rx="2" fill="#0f766e" transform="rotate(45 251 203)" />
     <rect x="276" y="168" width="11" height="11" rx="2" fill="#0f766e" transform="rotate(45 281 173)" />
 
-    <text x="32" y="242" fontSize="11" fill="var(--color-text-muted)">
-      Amber rings mark closest points defining the margin
-    </text>
+    <text x="32" y="242" fontSize="11" fill="var(--color-text-muted)">{"Amber rings mark closest points defining the margin"}</text>
 
     {/* Right panel */}
     <rect
@@ -113,9 +105,7 @@ In 2D, a linear decision boundary is a straight line; in 3D, a flat plane; in hi
       stroke="var(--color-border-strong)"
       strokeWidth="1.5"
     />
-    <text x="362" y="40" fontSize="13.5" fontWeight="700" fill="var(--color-text)">
-      Nonlinear (XOR-Style) Pattern
-    </text>
+    <text x="362" y="40" fontSize="13.5" fontWeight="700" fill="var(--color-text)">{"Nonlinear (XOR-Style) Pattern"}</text>
 
     <line x1="495" y1="62" x2="495" y2="218" stroke="var(--color-border-strong)" strokeWidth="1.2" />
     <line x1="382" y1="140" x2="608" y2="140" stroke="var(--color-border-strong)" strokeWidth="1.2" />
@@ -132,9 +122,7 @@ In 2D, a linear decision boundary is a straight line; in 3D, a flat plane; in hi
     <rect x="424" y="168" width="11" height="11" rx="2" fill="#0f766e" transform="rotate(45 429 173)" />
     <rect x="450" y="184" width="11" height="11" rx="2" fill="#0f766e" transform="rotate(45 455 189)" />
 
-    <text x="362" y="242" fontSize="11" fill="var(--color-text-muted)">
-      No single straight line cleanly separates diagonals
-    </text>
+    <text x="362" y="242" fontSize="11" fill="var(--color-text-muted)">{"No single straight line cleanly separates diagonals"}</text>
   </svg>
 </DiagramCaption>
 
@@ -272,6 +260,6 @@ Even today, linear and kernel SVMs remain strong, fast baselines on **tabular me
 ## 11. Related Lessons
 
 - Previous: <a href={getLessonHref('machine-learning/how-machine-learning-works')}>How Does Machine Learning Work?</a>
-- Next: <a href={getLessonHref('deep-learning/understanding-neural-networks')}>Understanding Neural Networks</a>
+- Next: <a href={getLessonHref('machine-learning/k-nearest-neighbors')}>Understanding K-Nearest Neighbors (KNN)</a>
 - Browse track: <a href={getTrackHref('machine-learning')}>Machine Learning Track</a>
 - Foundational reference: Cortes, C., &amp; Vapnik, V. (1995), *Support-Vector Networks*, Machine Learning; Schölkopf, B., &amp; Smola, A. J., *Learning with Kernels*.

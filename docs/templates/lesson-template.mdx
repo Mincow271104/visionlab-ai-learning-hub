@@ -49,29 +49,23 @@ Start with a relatable real-world analogy or tiny concrete example before introd
 
 ## 4. Visual Explanation
 
-Include an original accessible SVG diagram (or properly licensed visual asset) with clear labels and a descriptive `<DiagramCaption />`.
+Include an original accessible SVG diagram (or properly licensed visual asset) inside `<DiagramCaption>`. Do not wrap `<DiagramCaption>` in another `<figure>`, and wrap literal SVG text nodes in JSX string expressions (`{"..."}`) so MDX does not inject `<p>` tags into `<svg>`.
 
-<figure class="vl-diagram-card">
+<DiagramCaption
+  label="Figure 1"
+  caption="Explain the visual takeaway in one or two clear sentences."
+>
   <svg
     viewBox="0 0 720 220"
     role="img"
     aria-labelledby="template-diagram-title template-diagram-desc"
-    class="vl-diagram-svg"
   >
-    <title id="template-diagram-title">Short Diagram Title</title>
-    <desc id="template-diagram-desc">
-      Describe what the diagram shows so learners using screen readers receive the same teaching insight.
-    </desc>
-    <rect x="16" y="16" width="688" height="188" rx="12" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="1.5" />
-    <text x="360" y="115" textAnchor="middle" fontSize="14" fontWeight="600" fill="#0f172a">
-      Replace with labeled conceptual diagram
-    </text>
+    <title id="template-diagram-title">{"Short Diagram Title"}</title>
+    <desc id="template-diagram-desc">{"Describe what the diagram shows so learners using screen readers receive the same teaching insight."}</desc>
+    <rect x="16" y="16" width="688" height="188" rx="12" fill="var(--color-surface)" stroke="var(--color-border-strong)" strokeWidth="1.5" />
+    <text x="360" y="115" textAnchor="middle" fontSize="14" fontWeight="600" fill="var(--color-text)">{"Replace with labeled conceptual diagram"}</text>
   </svg>
-  <DiagramCaption
-    label="Figure 1"
-    caption="Explain the visual takeaway in one or two clear sentences."
-  />
-</figure>
+</DiagramCaption>
 
 ## 5. Step-by-Step Walkthrough
 

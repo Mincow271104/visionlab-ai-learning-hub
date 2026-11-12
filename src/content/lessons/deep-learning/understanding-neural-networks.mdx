@@ -58,49 +58,47 @@ Inside every artificial neuron, computation happens in two clear stages: first a
     role="img"
     aria-labelledby="neuron-diag-title neuron-diag-desc"
   >
-    <title id="neuron-diag-title">
-      Anatomy of an artificial neuron
-    </title>
+    <title id="neuron-diag-title">{"Anatomy of an artificial neuron"}</title>
     <desc id="neuron-diag-desc">
-      Diagram showing inputs x1 and x2 multiplied by weights w1 and w2 plus bias b entering a summation circle z = w1*x1 + w2*x2 + b, then passing through ReLU(z) = max(0, z) to produce output a.
+      {"Diagram showing inputs x1 and x2 multiplied by weights w1 and w2 plus bias b entering a summation circle z = w1*x1 + w2*x2 + b, then passing through ReLU(z) = max(0, z) to produce output a."}
     </desc>
 
     {/* Inputs */}
     <rect x="20" y="34" width="84" height="44" rx="10" fill="var(--color-accent-soft)" stroke="var(--color-accent)" strokeWidth="1.6" />
-    <text x="62" y="61" textAnchor="middle" fontSize="13" fontWeight="700" fill="var(--color-text)">Input x₁</text>
+    <text x="62" y="61" textAnchor="middle" fontSize="13" fontWeight="700" fill="var(--color-text)">{"Input x₁"}</text>
 
     <rect x="20" y="138" width="84" height="44" rx="10" fill="var(--color-accent-soft)" stroke="var(--color-accent)" strokeWidth="1.6" />
-    <text x="62" y="165" textAnchor="middle" fontSize="13" fontWeight="700" fill="var(--color-text)">Input x₂</text>
+    <text x="62" y="165" textAnchor="middle" fontSize="13" fontWeight="700" fill="var(--color-text)">{"Input x₂"}</text>
 
     {/* Arrows with weights */}
     <line x1="104" y1="56" x2="226" y2="102" stroke="var(--color-accent)" strokeWidth="2" />
-    <text x="158" y="66" textAnchor="middle" fontSize="12" fontWeight="700" fill="var(--color-accent)">× w₁</text>
+    <text x="158" y="66" textAnchor="middle" fontSize="12" fontWeight="700" fill="var(--color-accent)">{"× w₁"}</text>
 
     <line x1="104" y1="160" x2="226" y2="118" stroke="var(--color-accent)" strokeWidth="2" />
-    <text x="158" y="156" textAnchor="middle" fontSize="12" fontWeight="700" fill="var(--color-accent)">× w₂</text>
+    <text x="158" y="156" textAnchor="middle" fontSize="12" fontWeight="700" fill="var(--color-accent)">{"× w₂"}</text>
 
     {/* Bias */}
     <rect x="218" y="18" width="90" height="34" rx="8" fill="var(--color-surface)" stroke="var(--color-border-strong)" strokeWidth="1.5" />
-    <text x="263" y="39" textAnchor="middle" fontSize="12" fontWeight="700" fill="var(--color-text)">Bias (+ b)</text>
+    <text x="263" y="39" textAnchor="middle" fontSize="12" fontWeight="700" fill="var(--color-text)">{"Bias (+ b)"}</text>
     <line x1="263" y1="52" x2="263" y2="76" stroke="var(--color-border-strong)" strokeWidth="2" />
 
     {/* Weighted sum */}
     <circle cx="263" cy="110" r="36" fill="var(--color-surface)" stroke="var(--color-accent)" strokeWidth="2" />
-    <text x="263" y="106" textAnchor="middle" fontSize="12.5" fontWeight="700" fill="var(--color-text)">Sum (z)</text>
-    <text x="263" y="123" textAnchor="middle" fontSize="10.5" fill="var(--color-text-secondary)">w₁x₁+w₂x₂+b</text>
+    <text x="263" y="106" textAnchor="middle" fontSize="12.5" fontWeight="700" fill="var(--color-text)">{"Sum (z)"}</text>
+    <text x="263" y="123" textAnchor="middle" fontSize="10.5" fill="var(--color-text-secondary)">{"w₁x₁+w₂x₂+b"}</text>
 
     <line x1="299" y1="110" x2="366" y2="110" stroke="var(--color-accent)" strokeWidth="2" />
 
     {/* Activation */}
     <rect x="370" y="76" width="144" height="68" rx="12" fill="var(--color-teal-soft)" stroke="var(--color-teal)" strokeWidth="1.8" />
-    <text x="442" y="104" textAnchor="middle" fontSize="13" fontWeight="700" fill="var(--color-teal)">Activation</text>
-    <text x="442" y="124" textAnchor="middle" fontSize="11.5" fill="var(--color-text-secondary)">ReLU(z) = max(0, z)</text>
+    <text x="442" y="104" textAnchor="middle" fontSize="13" fontWeight="700" fill="var(--color-teal)">{"Activation"}</text>
+    <text x="442" y="124" textAnchor="middle" fontSize="11.5" fill="var(--color-text-secondary)">{"ReLU(z) = max(0, z)"}</text>
 
     <line x1="514" y1="110" x2="554" y2="110" stroke="var(--color-teal)" strokeWidth="2" />
 
     {/* Output */}
     <rect x="558" y="88" width="76" height="44" rx="10" fill="var(--color-surface)" stroke="var(--color-teal)" strokeWidth="1.8" />
-    <text x="596" y="115" textAnchor="middle" fontSize="12.5" fontWeight="700" fill="var(--color-text)">Output a</text>
+    <text x="596" y="115" textAnchor="middle" fontSize="12.5" fontWeight="700" fill="var(--color-text)">{"Output a"}</text>
   </svg>
 </DiagramCaption>
 
@@ -242,7 +240,7 @@ A 95% Softmax probability reflects confidence relative to the model's training d
 
 ## 11. Related Lessons
 
-- Previous: <a href={getLessonHref('machine-learning/understanding-svm-and-kernel-trick')}>Understanding SVM and the Kernel Trick</a>
-- Next: <a href={getLessonHref('computer-vision/how-computers-see-images')}>How Do Computers See Images?</a>
+- Previous: <a href={getLessonHref('machine-learning/k-nearest-neighbors')}>Understanding K-Nearest Neighbors (KNN)</a>
+- Next: <a href={getLessonHref('computer-vision/how-computers-see-images')}>How Computers See Images</a>
 - Browse track: <a href={getTrackHref('deep-learning')}>Deep Learning Track</a>
 - Foundational reference: Goodfellow, I., Bengio, Y., &amp; Courville, A., *Deep Learning* (Chapter 6: Deep Feedforward Networks); Rumelhart, D. E., Hinton, G. E., &amp; Williams, R. J. (1986), *Learning representations by back-propagating errors*, Nature.

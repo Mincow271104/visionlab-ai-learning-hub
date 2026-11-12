@@ -52,23 +52,25 @@ Object detection draws boxes around named items like "person" or "bicycle." Dept
 
 The illustration below compares an input 2D scene with its corresponding depth map and contrasts how single-camera monocular estimation differs from two-camera stereo triangulation.
 
-<figure class="vl-diagram-card">
+<DiagramCaption
+  label="Figure 1"
+  caption="A depth map assigns a relative or metric distance estimate to every pixel. Monocular models infer depth from learned single-image visual cues, while stereo systems triangulate horizontal shifts between two camera views."
+>
   <svg
     viewBox="0 0 760 310"
     role="img"
     aria-labelledby="depth-diagram-title depth-diagram-desc"
-    class="vl-diagram-svg"
   >
-    <title id="depth-diagram-title">From 2D Scene to Depth Map: Monocular vs. Stereo Approaches</title>
+    <title id="depth-diagram-title">{"From 2D Scene to Depth Map: Monocular vs. Stereo Approaches"}</title>
     <desc id="depth-diagram-desc">
-      Left: an RGB street scene with a close signpost, mid-distance tree, and distant mountains. Middle: the corresponding color-coded depth map from bright warm near tones to dark cool far tones. Right: comparison between monocular learned cues from one camera and stereo disparity from two side-by-side cameras.
+      {"Left: an RGB street scene with a close signpost, mid-distance tree, and distant mountains. Middle: the corresponding color-coded depth map from bright warm near tones to dark cool far tones. Right: comparison between monocular learned cues from one camera and stereo disparity from two side-by-side cameras."}
     </desc>
 
     <rect x="12" y="14" width="736" height="282" rx="14" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="1.5" />
 
     {/* Panel 1: 2D Input Image */}
     <text x="128" y="42" textAnchor="middle" fontSize="14" fontWeight="700" fill="#0f172a">
-      1. Flat 2D RGB Image
+      {"1. Flat 2D RGB Image"}
     </text>
     <rect x="34" y="56" width="188" height="164" rx="10" fill="#bae6fd" stroke="#0284c7" strokeWidth="1.5" />
     {/* Distant mountains */}
@@ -80,11 +82,11 @@ The illustration below compares an input 2D scene with its corresponding depth m
     <circle cx="155" cy="116" r="22" fill="#16a34a" />
     {/* Foreground cone / post */}
     <polygon points="62,212 76,144 90,212" fill="#ea580c" />
-    <text x="76" y="238" textAnchor="middle" fontSize="11.5" fontWeight="600" fill="#b45309">Near</text>
-    <text x="155" y="238" textAnchor="middle" fontSize="11.5" fontWeight="600" fill="#15803d">Mid</text>
-    <text x="195" y="238" textAnchor="middle" fontSize="11.5" fontWeight="600" fill="#475569">Far</text>
+    <text x="76" y="238" textAnchor="middle" fontSize="11.5" fontWeight="600" fill="#b45309">{"Near"}</text>
+    <text x="155" y="238" textAnchor="middle" fontSize="11.5" fontWeight="600" fill="#15803d">{"Mid"}</text>
+    <text x="195" y="238" textAnchor="middle" fontSize="11.5" fontWeight="600" fill="#475569">{"Far"}</text>
     <text x="128" y="264" textAnchor="middle" fontSize="11.5" fill="#334155">
-      Captures color (R, G, B), not distance
+      {"Captures color (R, G, B), not distance"}
     </text>
 
     {/* Arrow 1 -> 2 */}
@@ -93,7 +95,7 @@ The illustration below compares an input 2D scene with its corresponding depth m
 
     {/* Panel 2: Depth Map */}
     <text x="378" y="42" textAnchor="middle" fontSize="14" fontWeight="700" fill="#0f172a">
-      2. Predicted Depth Map
+      {"2. Predicted Depth Map"}
     </text>
     <rect x="284" y="56" width="188" height="164" rx="10" fill="#1e1b4b" stroke="#4338ca" strokeWidth="1.5" />
     {/* Sky = farthest */}
@@ -111,16 +113,16 @@ The illustration below compares an input 2D scene with its corresponding depth m
     <polygon points="312,212 326,144 340,212" fill="#fde047" />
     {/* Legend */}
     <rect x="294" y="232" width="38" height="10" rx="3" fill="#fde047" />
-    <text x="338" y="241" fontSize="11" fill="#334155">Closer</text>
+    <text x="338" y="241" fontSize="11" fill="#334155">{"Closer"}</text>
     <rect x="394" y="232" width="38" height="10" rx="3" fill="#1e1b4b" />
-    <text x="438" y="241" fontSize="11" fill="#334155">Farther</text>
+    <text x="438" y="241" fontSize="11" fill="#334155">{"Farther"}</text>
     <text x="378" y="264" textAnchor="middle" fontSize="11.5" fill="#334155">
-      One depth value estimated per pixel
+      {"One depth value estimated per pixel"}
     </text>
 
     {/* Panel 3: Monocular vs Stereo */}
     <text x="614" y="42" textAnchor="middle" fontSize="14" fontWeight="700" fill="#0f172a">
-      3. Two Main Strategies
+      {"3. Two Main Strategies"}
     </text>
 
     {/* Monocular card */}
@@ -128,10 +130,10 @@ The illustration below compares an input 2D scene with its corresponding depth m
     <circle cx="524" cy="92" r="10" fill="#2563eb" />
     <line x1="534" y1="92" x2="578" y2="78" stroke="#60a5fa" strokeWidth="1.5" strokeDasharray="4 3" />
     <line x1="534" y1="92" x2="578" y2="106" stroke="#60a5fa" strokeWidth="1.5" strokeDasharray="4 3" />
-    <text x="588" y="84" fontSize="12.5" fontWeight="700" fill="#1e40af">Monocular (1 camera)</text>
-    <text x="588" y="103" fontSize="11" fill="#334155">Uses learned cues: occlusion,</text>
-    <text x="588" y="119" fontSize="11" fill="#334155">scale, perspective, blur.</text>
-    <text x="588" y="137" fontSize="10.5" fontWeight="600" fill="#0369a1">Easy setup; scale can be ambiguous</text>
+    <text x="588" y="84" fontSize="12.5" fontWeight="700" fill="#1e40af">{"Monocular (1 camera)"}</text>
+    <text x="588" y="103" fontSize="11" fill="#334155">{"Uses learned cues: occlusion,"}</text>
+    <text x="588" y="119" fontSize="11" fill="#334155">{"scale, perspective, blur."}</text>
+    <text x="588" y="137" fontSize="10.5" fontWeight="600" fill="#0369a1">{"Easy setup; scale can be ambiguous"}</text>
 
     {/* Stereo card */}
     <rect x="498" y="166" width="232" height="106" rx="10" fill="#ffffff" stroke="#86efac" strokeWidth="1.5" />
@@ -140,17 +142,13 @@ The illustration below compares an input 2D scene with its corresponding depth m
     <line x1="532" y1="196" x2="576" y2="216" stroke="#4ade80" strokeWidth="1.5" />
     <line x1="532" y1="236" x2="576" y2="216" stroke="#4ade80" strokeWidth="1.5" />
     <circle cx="576" cy="216" r="4" fill="#ea580c" />
-    <text x="588" y="190" fontSize="12.5" fontWeight="700" fill="#166534">Stereo (2 cameras)</text>
-    <text x="588" y="209" fontSize="11" fill="#334155">Matches pixels across left/right</text>
-    <text x="588" y="225" fontSize="11" fill="#334155">views using horizontal disparity.</text>
-    <text x="588" y="245" fontSize="10.5" fontWeight="600" fill="#15803d">Stronger geometry; needs calibrated</text>
-    <text x="588" y="259" fontSize="10.5" fontWeight="600" fill="#15803d">camera pair &amp; textured surfaces</text>
+    <text x="588" y="190" fontSize="12.5" fontWeight="700" fill="#166534">{"Stereo (2 cameras)"}</text>
+    <text x="588" y="209" fontSize="11" fill="#334155">{"Matches pixels across left/right"}</text>
+    <text x="588" y="225" fontSize="11" fill="#334155">{"views using horizontal disparity."}</text>
+    <text x="588" y="245" fontSize="10.5" fontWeight="600" fill="#15803d">{"Stronger geometry; needs calibrated"}</text>
+    <text x="588" y="259" fontSize="10.5" fontWeight="600" fill="#15803d">{"camera pair & textured surfaces"}</text>
   </svg>
-  <DiagramCaption
-    label="Figure 1"
-    caption="A depth map assigns a relative or metric distance estimate to every pixel. Monocular models infer depth from learned single-image visual cues, while stereo systems triangulate horizontal shifts between two camera views."
-  />
-</figure>
+</DiagramCaption>
 
 ## 5. Step-by-Step Walkthrough
 

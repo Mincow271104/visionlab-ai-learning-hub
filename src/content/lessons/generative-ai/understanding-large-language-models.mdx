@@ -58,27 +58,29 @@ An LLM does <strong>not</strong> search a table of pre-saved answers when you as
 
 The diagram below shows the core flow inside a modern generative LLM: turning input text into numbered **tokens**, weighing relationships across context via **attention** inside **Transformer** blocks, scoring candidate next tokens, and appending the chosen token for the next step.
 
-<figure class="vl-diagram-card">
+<DiagramCaption
+  label="Figure 1"
+  caption="An LLM converts text into numbered tokens, uses Transformer attention layers to connect relevant words across the context window, scores likely next tokens, and repeats one token at a time."
+>
   <svg
     viewBox="0 0 760 320"
     role="img"
     aria-labelledby="llm-diagram-title llm-diagram-desc"
-    class="vl-diagram-svg"
   >
-    <title id="llm-diagram-title">How a Large Language Model Predicts the Next Token</title>
+    <title id="llm-diagram-title">{"How a Large Language Model Predicts the Next Token"}</title>
     <desc id="llm-diagram-desc">
-      Flow from left to right: a prompt string is split into tokens, mapped to numeric embeddings, processed by Transformer attention layers connecting related tokens in context, and scored into probabilities to pick the next token and loop sequentially.
+      {"Flow from left to right: a prompt string is split into tokens, mapped to numeric embeddings, processed by Transformer attention layers connecting related tokens in context, and scored into probabilities to pick the next token and loop sequentially."}
     </desc>
 
     <rect x="12" y="14" width="736" height="292" rx="14" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="1.5" />
 
     {/* Stage 1: Prompt -> Tokens */}
     <text x="110" y="42" textAnchor="middle" fontSize="13.5" fontWeight="700" fill="#0f172a">
-      1. Tokenization
+      {"1. Tokenization"}
     </text>
     <rect x="28" y="56" width="164" height="44" rx="8" fill="#ffffff" stroke="#94a3b8" strokeWidth="1.5" />
     <text x="110" y="82" textAnchor="middle" fontSize="12" fontWeight="600" fill="#1e293b">
-      "Look both ..."
+      {'"Look both ..."'}
     </text>
 
     <path d="M110 104 V124" stroke="#2563eb" strokeWidth="2" />
@@ -86,16 +88,16 @@ The diagram below shows the core flow inside a modern generative LLM: turning in
 
     {/* Token chips */}
     <rect x="34" y="136" width="66" height="32" rx="6" fill="#dbeafe" stroke="#3b82f6" strokeWidth="1.2" />
-    <text x="67" y="156" textAnchor="middle" fontSize="12" fontFamily="monospace" fill="#1e3a8a">Look</text>
+    <text x="67" y="156" textAnchor="middle" fontSize="12" fontFamily="monospace" fill="#1e3a8a">{"Look"}</text>
     <rect x="108" y="136" width="68" height="32" rx="6" fill="#dbeafe" stroke="#3b82f6" strokeWidth="1.2" />
-    <text x="142" y="156" textAnchor="middle" fontSize="12" fontFamily="monospace" fill="#1e3a8a">both</text>
+    <text x="142" y="156" textAnchor="middle" fontSize="12" fontFamily="monospace" fill="#1e3a8a">{"both"}</text>
 
     <text x="110" y="192" textAnchor="middle" fontSize="11" fill="#475569">
-      Split text into token IDs
+      {"Split text into token IDs"}
     </text>
     <rect x="34" y="204" width="152" height="36" rx="6" fill="#eff6ff" stroke="#bfdbfe" strokeWidth="1" />
     <text x="110" y="226" textAnchor="middle" fontSize="11.5" fontFamily="monospace" fill="#1d4ed8">
-      [7920, 2225] → vectors
+      {"[7920, 2225] → vectors"}
     </text>
 
     {/* Arrow 1 -> 2 */}
@@ -104,36 +106,36 @@ The diagram below shows the core flow inside a modern generative LLM: turning in
 
     {/* Stage 2: Transformer & Attention */}
     <text x="366" y="42" textAnchor="middle" fontSize="13.5" fontWeight="700" fill="#0f172a">
-      2. Context &amp; Attention (Transformer)
+      {"2. Context & Attention (Transformer)"}
     </text>
     <rect x="256" y="56" width="220" height="202" rx="12" fill="#ffffff" stroke="#818cf8" strokeWidth="1.8" />
     <text x="366" y="80" textAnchor="middle" fontSize="12" fontWeight="700" fill="#3730a3">
-      Self-Attention Layers
+      {"Self-Attention Layers"}
     </text>
 
     {/* Context words with attention arcs */}
     <rect x="274" y="100" width="54" height="28" rx="6" fill="#eef2ff" stroke="#6366f1" strokeWidth="1.2" />
-    <text x="301" y="118" textAnchor="middle" fontSize="11.5" fill="#312e81">street</text>
+    <text x="301" y="118" textAnchor="middle" fontSize="11.5" fill="#312e81">{"street"}</text>
 
     <rect x="338" y="100" width="52" height="28" rx="6" fill="#eef2ff" stroke="#6366f1" strokeWidth="1.2" />
-    <text x="364" y="118" textAnchor="middle" fontSize="11.5" fill="#312e81">Look</text>
+    <text x="364" y="118" textAnchor="middle" fontSize="11.5" fill="#312e81">{"Look"}</text>
 
     <rect x="400" y="100" width="56" height="28" rx="6" fill="#eef2ff" stroke="#6366f1" strokeWidth="1.2" />
-    <text x="428" y="118" textAnchor="middle" fontSize="11.5" fontWeight="700" fill="#312e81">both</text>
+    <text x="428" y="118" textAnchor="middle" fontSize="11.5" fontWeight="700" fill="#312e81">{"both"}</text>
 
     {/* Attention connection curves */}
     <path d="M301 128 Q364 182 428 128" fill="none" stroke="#4f46e5" strokeWidth="2.5" />
     <path d="M364 128 Q396 164 428 128" fill="none" stroke="#818cf8" strokeWidth="2" />
 
     <text x="366" y="186" textAnchor="middle" fontSize="11.5" fill="#334155">
-      Each token weighs which earlier
+      {"Each token weighs which earlier"}
     </text>
     <text x="366" y="203" textAnchor="middle" fontSize="11.5" fill="#334155">
-      tokens matter most right now.
+      {"tokens matter most right now."}
     </text>
     <rect x="274" y="218" width="184" height="28" rx="6" fill="#f5f3ff" stroke="#ddd6fe" strokeWidth="1" />
     <text x="366" y="236" textAnchor="middle" fontSize="11" fontWeight="600" fill="#5b21b6">
-      Context window tracks recent history
+      {"Context window tracks recent history"}
     </text>
 
     {/* Arrow 2 -> 3 */}
@@ -142,41 +144,37 @@ The diagram below shows the core flow inside a modern generative LLM: turning in
 
     {/* Stage 3: Next-Token Prediction & Loop */}
     <text x="634" y="42" textAnchor="middle" fontSize="13.5" fontWeight="700" fill="#0f172a">
-      3. Next-Token Prediction
+      {"3. Next-Token Prediction"}
     </text>
     <rect x="538" y="56" width="192" height="162" rx="12" fill="#ffffff" stroke="#14b8a6" strokeWidth="1.8" />
     <text x="634" y="79" textAnchor="middle" fontSize="12" fontWeight="700" fill="#0f766e">
-      Candidate Probabilities
+      {"Candidate Probabilities"}
     </text>
 
     {/* Probability bars */}
-    <text x="552" y="106" fontSize="11.5" fontFamily="monospace" fill="#0f172a">ways</text>
+    <text x="552" y="106" fontSize="11.5" fontFamily="monospace" fill="#0f172a">{"ways"}</text>
     <rect x="606" y="95" width="96" height="14" rx="4" fill="#0d9488" />
-    <text x="708" y="106" fontSize="11" fontWeight="700" fill="#0f766e">High</text>
+    <text x="708" y="106" fontSize="11" fontWeight="700" fill="#0f766e">{"High"}</text>
 
-    <text x="552" y="134" fontSize="11.5" fontFamily="monospace" fill="#334155">sides</text>
+    <text x="552" y="134" fontSize="11.5" fontFamily="monospace" fill="#334155">{"sides"}</text>
     <rect x="606" y="123" width="44" height="14" rx="4" fill="#5eead4" />
 
-    <text x="552" y="162" fontSize="11.5" fontFamily="monospace" fill="#64748b">cars</text>
+    <text x="552" y="162" fontSize="11.5" fontFamily="monospace" fill="#64748b">{"cars"}</text>
     <rect x="606" y="151" width="18" height="14" rx="4" fill="#cbd5e1" />
 
     <rect x="554" y="180" width="160" height="26" rx="6" fill="#ecfeff" stroke="#5eead4" strokeWidth="1" />
     <text x="634" y="197" textAnchor="middle" fontSize="11.5" fontWeight="700" fill="#0f766e">
-      Chosen token → "ways"
+      {'Chosen token → "ways"'}
     </text>
 
     {/* Loop back note */}
     <path d="M634 222 V274 H110 V248" fill="none" stroke="#0284c7" strokeWidth="2" strokeDasharray="5 4" />
     <polygon points="105,252 115,252 110,242" fill="#0284c7" />
     <text x="382" y="290" textAnchor="middle" fontSize="11.5" fontWeight="600" fill="#0369a1">
-      Append "ways" to the prompt and repeat step-by-step until done
+      {'Append "ways" to the prompt and repeat step-by-step until done'}
     </text>
   </svg>
-  <DiagramCaption
-    label="Figure 1"
-    caption="An LLM converts text into numbered tokens, uses Transformer attention layers to connect relevant words across the context window, scores likely next tokens, and repeats one token at a time."
-  />
-</figure>
+</DiagramCaption>
 
 ## 5. Step-by-Step Walkthrough
 
