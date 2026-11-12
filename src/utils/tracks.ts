@@ -34,7 +34,6 @@ export interface LearningTrackInfo {
   readonly shortLabel: string;
   readonly summary: string;
   readonly sampleTopics: readonly string[];
-  readonly status: 'planned' | 'in-progress' | 'available';
 }
 
 export const LEARNING_TRACKS: readonly LearningTrackInfo[] = [
@@ -48,9 +47,8 @@ export const LEARNING_TRACKS: readonly LearningTrackInfo[] = [
     sampleTopics: [
       'What makes software "intelligent"',
       'Rules vs. learning from examples',
-      'Inputs, predictions, and uncertainty',
+      'Narrow AI capabilities and limits',
     ],
-    status: 'planned',
   },
   {
     id: 'machine-learning',
@@ -60,11 +58,10 @@ export const LEARNING_TRACKS: readonly LearningTrackInfo[] = [
     summary:
       'Discover how models turn measurable features into decision boundaries, why margins matter, and what separates memorizing from generalizing.',
     sampleTopics: [
-      'Features, labels, and decision boundaries',
-      'Support Vector Machines (SVM) intuition',
-      'Training error vs. generalization',
+      'Features, labels, and training loops',
+      'Support Vector Machines and margins',
+      'Nonlinear patterns and the kernel trick',
     ],
-    status: 'planned',
   },
   {
     id: 'deep-learning',
@@ -74,11 +71,10 @@ export const LEARNING_TRACKS: readonly LearningTrackInfo[] = [
     summary:
       'See how stacked layers of simple weighted connections combine small signals into richer concepts and adjust through feedback.',
     sampleTopics: [
-      'From a single neuron to layered networks',
-      'Weights, biases, and activations',
-      'How feedback improves predictions',
+      'Artificial neurons, weights, and biases',
+      'Activation functions and hidden layers',
+      'Forward passes and learning overview',
     ],
-    status: 'planned',
   },
   {
     id: 'computer-vision',
@@ -86,13 +82,12 @@ export const LEARNING_TRACKS: readonly LearningTrackInfo[] = [
     title: 'Computer Vision',
     shortLabel: 'Stage 4',
     summary:
-      'Understand how computers represent photographs as grids of pixel numbers and detect edges, textures, and shapes using sliding filters.',
+      'Understand how computers represent photographs as grids of pixel numbers, extract edges via convolutions, and estimate 3D scene depth.',
     sampleTopics: [
-      'Images as grids of numbers',
-      'Edge detection and convolution filters',
-      'Hierarchical visual features in CNNs',
+      'Pixels, RGB channels, and tensors',
+      'Convolution filters and CNN intuition',
+      'Monocular, stereo, and depth maps',
     ],
-    status: 'planned',
   },
   {
     id: 'generative-ai',
@@ -100,12 +95,29 @@ export const LEARNING_TRACKS: readonly LearningTrackInfo[] = [
     title: 'Generative AI & Large Language Models',
     shortLabel: 'Stage 5',
     summary:
-      'Explore how modern generative models predict next tokens, weigh context with attention, and connect language with visual understanding.',
+      'Explore how modern generative models break text into tokens, weigh context with attention, and predict responses step by step.',
     sampleTopics: [
-      'Tokens and next-step prediction',
-      'Attention as selective focus',
-      'Capabilities and limits of generative AI',
+      'Tokens and next-token prediction',
+      'Context windows and attention intuition',
+      'Hallucinations and responsible use',
     ],
-    status: 'planned',
   },
 ] as const;
+
+export function getTrackById(id: TrackId): LearningTrackInfo {
+  const found = LEARNING_TRACKS.find((track) => track.id === id);
+  if (!found) {
+    throw new Error(`Unknown track id: ${id}`);
+  }
+  return found;
+}
+
+export function getTrackStage(id: TrackId): number {
+  return getTrackById(id).stage;
+}
+
+export const DIFFICULTY_LABELS: Record<DifficultyLevel, string> = {
+  beginner: 'Beginner',
+  intermediate: 'Intermediate',
+  advanced: 'Advanced',
+};

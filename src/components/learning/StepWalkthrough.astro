@@ -1,0 +1,89 @@
+---
+export interface WalkthroughStep {
+  readonly title: string;
+  readonly detail: string;
+}
+
+interface Props {
+  steps: readonly WalkthroughStep[];
+  heading?: string;
+}
+
+const { steps, heading } = Astro.props;
+---
+
+<div class="step-walkthrough">
+  {heading && <h3 class="step-walkthrough__heading">{heading}</h3>}
+  <ol class="step-walkthrough__list">
+    {steps.map((step, index) => (
+      <li class="step-walkthrough__item">
+        <span class="step-walkthrough__num" aria-hidden="true">
+          {index + 1}
+        </span>
+        <div class="step-walkthrough__content">
+          <p class="step-walkthrough__title">
+            <span class="visually-hidden">Step {index + 1}: </span>
+            {step.title}
+          </p>
+          <p class="step-walkthrough__detail">{step.detail}</p>
+        </div>
+      </li>
+    ))}
+  </ol>
+</div>
+
+<style>
+  .step-walkthrough {
+    margin-block: var(--space-5);
+  }
+
+  .step-walkthrough__heading {
+    font-size: 1.05rem;
+    margin-bottom: var(--space-3);
+  }
+
+  .step-walkthrough__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .step-walkthrough__item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-3);
+    align-items: start;
+    padding: var(--space-4);
+    background-color: var(--color-bg-subtle);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+  }
+
+  .step-walkthrough__num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    border-radius: var(--radius-full);
+    background-color: var(--color-accent);
+    color: var(--color-on-accent);
+    font-size: 0.88rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .step-walkthrough__title {
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 0.25rem;
+  }
+
+  .step-walkthrough__detail {
+    font-size: 0.95rem;
+    color: var(--color-text-secondary);
+  }
+</style>

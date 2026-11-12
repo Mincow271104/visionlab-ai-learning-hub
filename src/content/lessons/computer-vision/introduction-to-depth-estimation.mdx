@@ -1,0 +1,279 @@
+---
+title: "Introduction to Depth Estimation"
+description: "Discover how computer vision systems turn flat 2D images into depth maps, comparing monocular cues, stereo vision, relative vs. metric depth, and real-world uses."
+track: "computer-vision"
+difficulty: "beginner"
+estimatedMinutes: 14
+order: 2
+tags:
+  - computer-vision
+  - depth-estimation
+  - depth-map
+  - stereo-vision
+  - 3d-perception
+status: "published"
+---
+import Callout from '../../../components/learning/Callout.astro';
+import DiagramCaption from '../../../components/learning/DiagramCaption.astro';
+import StepWalkthrough from '../../../components/learning/StepWalkthrough.astro';
+import KnowledgeCheck from '../../../components/learning/KnowledgeCheck';
+import { getLessonHref, getTrackHref } from '../../../utils/lessons';
+
+## 1. Introduction
+
+A standard photograph is flat: it records width and height, like a painting on canvas, but drops the third dimension—how far each point sits from the camera. Yet when humans look at a photo, we still immediately sense that a coffee mug on the table is closer than the chair behind it or the mountains outside the window.
+
+**Depth estimation** is the computer vision task of predicting distance from the camera for every pixel in an image. Turning flat 2D pictures into approximate 3D distance estimates unlocks crucial capabilities for robotics, autonomous driving, augmented reality, and creative photo effects.
+
+## 2. Learning Objectives
+
+By the end of this lesson, you will be able to:
+
+- Explain what a **depth map** is and how it differs from an RGB color image or an object detection bounding box.
+- Contrast **monocular depth estimation** (from a single image) with **stereo depth estimation** (from two cameras).
+- Distinguish **relative depth** (ordering which object is closer) from **metric depth** (real-world units such as meters).
+- Identify everyday visual depth cues and key limitations of camera-based depth models.
+
+## 3. Intuitive Explanation
+
+Try closing one eye for a few seconds while looking around your room. Even with a single eye, you can still tell which object is closer because of subtle visual clues:
+
+- **Occlusion:** If your laptop blocks part of your lamp, the laptop must be in front of the lamp.
+- **Relative size:** Two cars of the same model look very different in size when one is parked nearby and the other is far down the road.
+- **Perspective & texture:** Parallel railroad tracks seem to meet in the distance, and crisp surface textures gradually look smoother far away.
+
+Now open both eyes. Your left and right eyes see slightly different horizontal angles of the same scene. Your brain uses that small shift—called **disparity**—to judge distance with much stronger geometric certainty. Computer vision researchers built algorithms inspired by both approaches: **monocular** (one-camera) and **stereo** (two-camera) depth estimation.
+
+<Callout type="note" title="Depth Estimation vs. Object Detection">
+Object detection draws boxes around named items like "person" or "bicycle." Depth estimation does not need object labels at all: it outputs a dense pixel-by-pixel distance estimate across the entire scene—near objects, walls, ground, and background sky alike.
+</Callout>
+
+## 4. Visual Explanation
+
+The illustration below compares an input 2D scene with its corresponding depth map and contrasts how single-camera monocular estimation differs from two-camera stereo triangulation.
+
+<DiagramCaption
+  label="Figure 1"
+  caption="A depth map assigns a relative or metric distance estimate to every pixel. Monocular models infer depth from learned single-image visual cues, while stereo systems triangulate horizontal shifts between two camera views."
+>
+  <svg
+    viewBox="0 0 760 310"
+    role="img"
+    aria-labelledby="depth-diagram-title depth-diagram-desc"
+  >
+    <title id="depth-diagram-title">{"From 2D Scene to Depth Map: Monocular vs. Stereo Approaches"}</title>
+    <desc id="depth-diagram-desc">
+      {"Left: an RGB street scene with a close signpost, mid-distance tree, and distant mountains. Middle: the corresponding color-coded depth map from bright warm near tones to dark cool far tones. Right: comparison between monocular learned cues from one camera and stereo disparity from two side-by-side cameras."}
+    </desc>
+
+    <rect x="12" y="14" width="736" height="282" rx="14" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="1.5" />
+
+    {/* Panel 1: 2D Input Image */}
+    <text x="128" y="42" textAnchor="middle" fontSize="14" fontWeight="700" fill="#0f172a">
+      {"1. Flat 2D RGB Image"}
+    </text>
+    <rect x="34" y="56" width="188" height="164" rx="10" fill="#bae6fd" stroke="#0284c7" strokeWidth="1.5" />
+    {/* Distant mountains */}
+    <polygon points="36,162 84,104 134,152 174,98 220,162" fill="#64748b" />
+    {/* Ground */}
+    <rect x="36" y="160" width="184" height="58" fill="#cbd5e1" />
+    {/* Mid-distance tree */}
+    <rect x="150" y="128" width="10" height="44" fill="#78350f" />
+    <circle cx="155" cy="116" r="22" fill="#16a34a" />
+    {/* Foreground cone / post */}
+    <polygon points="62,212 76,144 90,212" fill="#ea580c" />
+    <text x="76" y="238" textAnchor="middle" fontSize="11.5" fontWeight="600" fill="#b45309">{"Near"}</text>
+    <text x="155" y="238" textAnchor="middle" fontSize="11.5" fontWeight="600" fill="#15803d">{"Mid"}</text>
+    <text x="195" y="238" textAnchor="middle" fontSize="11.5" fontWeight="600" fill="#475569">{"Far"}</text>
+    <text x="128" y="264" textAnchor="middle" fontSize="11.5" fill="#334155">
+      {"Captures color (R, G, B), not distance"}
+    </text>
+
+    {/* Arrow 1 -> 2 */}
+    <path d="M230 138 H262" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" />
+    <polygon points="262,132 274,138 262,144" fill="#2563eb" />
+
+    {/* Panel 2: Depth Map */}
+    <text x="378" y="42" textAnchor="middle" fontSize="14" fontWeight="700" fill="#0f172a">
+      {"2. Predicted Depth Map"}
+    </text>
+    <rect x="284" y="56" width="188" height="164" rx="10" fill="#1e1b4b" stroke="#4338ca" strokeWidth="1.5" />
+    {/* Sky = farthest */}
+    <rect x="286" y="58" width="184" height="102" fill="#1e1b4b" />
+    {/* Distant mountains */}
+    <polygon points="286,162 334,104 384,152 424,98 470,162" fill="#4338ca" />
+    {/* Ground gradient-like bands */}
+    <rect x="286" y="160" width="184" height="20" fill="#6366f1" />
+    <rect x="286" y="180" width="184" height="20" fill="#a855f7" />
+    <rect x="286" y="200" width="184" height="18" fill="#f59e0b" />
+    {/* Mid tree */}
+    <rect x="400" y="128" width="10" height="44" fill="#ec4899" />
+    <circle cx="405" cy="116" r="22" fill="#ec4899" />
+    {/* Near cone */}
+    <polygon points="312,212 326,144 340,212" fill="#fde047" />
+    {/* Legend */}
+    <rect x="294" y="232" width="38" height="10" rx="3" fill="#fde047" />
+    <text x="338" y="241" fontSize="11" fill="#334155">{"Closer"}</text>
+    <rect x="394" y="232" width="38" height="10" rx="3" fill="#1e1b4b" />
+    <text x="438" y="241" fontSize="11" fill="#334155">{"Farther"}</text>
+    <text x="378" y="264" textAnchor="middle" fontSize="11.5" fill="#334155">
+      {"One depth value estimated per pixel"}
+    </text>
+
+    {/* Panel 3: Monocular vs Stereo */}
+    <text x="614" y="42" textAnchor="middle" fontSize="14" fontWeight="700" fill="#0f172a">
+      {"3. Two Main Strategies"}
+    </text>
+
+    {/* Monocular card */}
+    <rect x="498" y="60" width="232" height="92" rx="10" fill="#ffffff" stroke="#93c5fd" strokeWidth="1.5" />
+    <circle cx="524" cy="92" r="10" fill="#2563eb" />
+    <line x1="534" y1="92" x2="578" y2="78" stroke="#60a5fa" strokeWidth="1.5" strokeDasharray="4 3" />
+    <line x1="534" y1="92" x2="578" y2="106" stroke="#60a5fa" strokeWidth="1.5" strokeDasharray="4 3" />
+    <text x="588" y="84" fontSize="12.5" fontWeight="700" fill="#1e40af">{"Monocular (1 camera)"}</text>
+    <text x="588" y="103" fontSize="11" fill="#334155">{"Uses learned cues: occlusion,"}</text>
+    <text x="588" y="119" fontSize="11" fill="#334155">{"scale, perspective, blur."}</text>
+    <text x="588" y="137" fontSize="10.5" fontWeight="600" fill="#0369a1">{"Easy setup; scale can be ambiguous"}</text>
+
+    {/* Stereo card */}
+    <rect x="498" y="166" width="232" height="106" rx="10" fill="#ffffff" stroke="#86efac" strokeWidth="1.5" />
+    <circle cx="524" cy="196" r="8" fill="#16a34a" />
+    <circle cx="524" cy="236" r="8" fill="#16a34a" />
+    <line x1="532" y1="196" x2="576" y2="216" stroke="#4ade80" strokeWidth="1.5" />
+    <line x1="532" y1="236" x2="576" y2="216" stroke="#4ade80" strokeWidth="1.5" />
+    <circle cx="576" cy="216" r="4" fill="#ea580c" />
+    <text x="588" y="190" fontSize="12.5" fontWeight="700" fill="#166534">{"Stereo (2 cameras)"}</text>
+    <text x="588" y="209" fontSize="11" fill="#334155">{"Matches pixels across left/right"}</text>
+    <text x="588" y="225" fontSize="11" fill="#334155">{"views using horizontal disparity."}</text>
+    <text x="588" y="245" fontSize="10.5" fontWeight="600" fill="#15803d">{"Stronger geometry; needs calibrated"}</text>
+    <text x="588" y="259" fontSize="10.5" fontWeight="600" fill="#15803d">{"camera pair & textured surfaces"}</text>
+  </svg>
+</DiagramCaption>
+
+## 5. Step-by-Step Walkthrough
+
+<StepWalkthrough
+  heading="How Depth Estimation Pipelines Work"
+  steps={[
+    {
+      title: '1. Start with one or two aligned RGB images',
+      detail:
+        'A monocular system takes a single image frame; a stereo system captures synchronized left and right frames separated by a known horizontal baseline distance.'
+    },
+    {
+      title: '2. Extract multi-scale visual features',
+      detail:
+        'A neural network backbone examines local edges, object boundaries, vanishing lines, and larger scene context across the pixel grid.'
+    },
+    {
+      title: '3. Compare views or decode learned cues',
+      detail:
+        'Stereo pipelines measure pixel shift (disparity) between matching points in the left and right views—closer objects shift farther horizontally than distant mountains. Monocular deep learning models instead rely on patterns learned from training scenes with reference depth measurements (such as LiDAR or stereo datasets).'
+    },
+    {
+      title: '4. Output a dense depth map',
+      detail:
+        'The model produces an output grid matching the image spatial layout where each pixel stores a continuous depth score instead of RGB color.'
+    },
+    {
+      title: '5. Interpret relative vs. metric scale',
+      detail:
+        'Relative depth tells you point A is closer than point B (great for portrait background blur). Metric depth predicts physical units like meters—which requires either stereo geometry, sensor calibration, or camera intrinsics assumptions.'
+    }
+  ]}
+/>
+
+## 6. Interactive Demonstration
+
+Depth estimation is well served by this side-by-side static comparison because real depth inference runs heavy multi-scale neural networks or dense stereo matching across millions of pixels. A lightweight toy widget could pretend to run depth inference when it is only applying a fake color filter, which would violate truthful teaching. Instead, use the visual diagram above to connect **scene geometry → visual cues → pixel-wise depth map** cleanly.
+
+## 7. Real-World Example
+
+You have likely used depth estimation already on a smartphone camera:
+
+- **Portrait mode blur:** Modern phones estimate a depth map behind the person in the frame so software can keep the face sharp while smoothly blurring the distant background—imitating a large DSLR camera lens.
+- **Robotics and warehouse navigation:** Mobile robots use stereo cameras or depth sensors alongside AI vision models to detect obstacles like pallets or stairs before deciding where to steer.
+- **Augmented reality (AR):** When an app places a virtual sofa on your living room floor, depth estimation helps determine which real furniture sits in front of the virtual object so the sofa looks naturally grounded rather than floating on top of everything.
+
+## 8. Common Misconceptions
+
+- **Misconception: "Monocular depth estimation always knows exact distances in meters."**  
+  **Reality:** A single photo has inherent scale ambiguity—a tiny toy car up close can look almost identical in pixel projection to a real car far away unless the camera geometry or familiar scene context resolves scale. Many single-image models predict *relative* depth reliably while metric accuracy degrades outside familiar camera setups.
+- **Misconception: "Depth estimation requires identifying every object by name first."**  
+  **Reality:** Depth models estimate geometry pixel-by-pixel across unlabeled surfaces such as walls, floors, bushes, and roads—even for unfamiliar shapes.
+- **Misconception: "Camera-based depth works flawlessly on mirrors, glass, and blank white walls."**  
+  **Reality:** Transparent glass, shiny reflections, featureless white walls, and very dark scenes remove reliable visual cues and stereo pixel matches, causing noisy or incorrect depth estimates.
+
+## 9. Knowledge Check
+
+<KnowledgeCheck
+  client:visible
+  lessonId="computer-vision/introduction-to-depth-estimation"
+  questions={[
+    {
+      question: "What does a depth map store for each pixel in an image?",
+      options: [
+        "Only the Red color intensity from 0 to 255",
+        "An estimated distance from the camera to the visible surface at that pixel",
+        "The English label of the object category",
+        "The camera shutter speed"
+      ],
+      correctIndex: 1,
+      explanation: "A depth map matches the image layout and assigns a distance estimate (either relative closeness or metric units like meters) to each pixel."
+    },
+    {
+      question: "What is the key difference between relative depth and metric depth?",
+      options: [
+        "Relative depth only works indoors, while metric depth only works outdoors",
+        "Relative depth orders which surfaces are closer vs. farther; metric depth estimates physical units such as meters",
+        "Relative depth requires two cameras, while metric depth uses zero cameras",
+        "There is no difference; both terms mean object classification"
+      ],
+      correctIndex: 1,
+      explanation: "Relative depth captures ordering (near vs. far), which suffices for effects like background blur, whereas metric depth predicts physical distance measurements such as meters."
+    },
+    {
+      question: "How does stereo depth estimation use two side-by-side cameras?",
+      options: [
+        "One camera captures Red and the other captures Blue",
+        "It compares how much matching scene points shift horizontally (disparity) between the left and right images",
+        "It averages the two photos to remove shadows",
+        "It only keeps pixels where both photos are identical"
+      ],
+      correctIndex: 1,
+      explanation: "Nearby objects shift noticeably between left and right viewpoints (larger disparity), while very distant objects barely shift at all—allowing geometric triangulation."
+    },
+    {
+      question: "Which type of surface commonly confuses both stereo and monocular camera depth models?",
+      options: [
+        "Brick walls in daylight",
+        "Clear glass windows and mirrors",
+        "Bookshelves with varied books",
+        "Wooden tables with visible grain"
+      ],
+      correctIndex: 1,
+      explanation: "Transparent glass shows surfaces behind it and mirrors reflect virtual scenes, breaking both single-image surface cues and stereo pixel correspondence."
+    }
+  ]}
+/>
+
+## 10. Key Takeaways
+
+- **Depth estimation** recovers 3D scene distance from 2D images by producing a pixel-wise **depth map**.
+- **Monocular depth** predicts distance from one image using learned visual cues (occlusion, perspective, relative size), while **stereo depth** uses horizontal disparity across two calibrated cameras.
+- **Relative depth** ranks near vs. far surfaces; **metric depth** predicts real-world scale in units like meters.
+- Depth estimation complements—rather than duplicates—object detection, and struggles on reflective, transparent, or textureless surfaces.
+
+## 11. Related Lessons & Track
+
+- Start from the beginning of this track in <a href={getLessonHref('computer-vision/how-computers-see-images')}>How Computers See Images</a> to understand pixel grids and convolutional features.
+- View all topics in the <a href={getTrackHref('computer-vision')}>Computer Vision track</a>.
+- Learn how neural networks combine features across layers in <a href={getLessonHref('deep-learning/understanding-neural-networks')}>Understanding Neural Networks</a>.
+
+<Callout type="tip" title="References for Further Reading">
+  <ul>
+    <li>Hartley, R., &amp; Zisserman, A. <em>Multiple View Geometry in Computer Vision</em> (standard reference for stereo geometry and disparity).</li>
+    <li>Eigen, D., Puhrsch, C., &amp; Fergus, R. (2014). <em>Depth Map Prediction from a Single Image using a Multi-Scale Deep Network</em> (pioneering deep monocular depth paper).</li>
+    <li>Ranftl, R., Lasinger, K., Hafner, D., Schindler, K., &amp; Koltun, V. (2020/2022). <em>Towards Robust Monocular Depth Estimation (MiDaS)</em> (relative depth across diverse datasets).</li>
+  </ul>
+</Callout>

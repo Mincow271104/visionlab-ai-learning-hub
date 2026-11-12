@@ -1,41 +1,62 @@
 ---
+import { getTrackHref, type LessonSummary } from '../../utils/lessons';
 import type { LearningTrackInfo } from '../../utils/tracks';
 import StatusBadge from '../ui/StatusBadge.astro';
 
 interface Props {
   track: LearningTrackInfo;
+  lessons?: readonly LessonSummary[];
 }
 
-const { track } = Astro.props;
-
-const statusLabels: Record<LearningTrackInfo['status'], string> = {
-  planned: 'Planned · Coming soon',
-  'in-progress': 'In progress',
-  available: 'Available',
-};
+const { track, lessons = [] } = Astro.props;
+const trackHref = getTrackHref(track.id);
+const publishedCount = lessons.length;
 ---
 
 <article class="track-card" aria-labelledby={`track-title-${track.id}`}>
   <div class="track-card__top">
     <span class="track-card__stage">{track.shortLabel}</span>
-    <StatusBadge variant={track.status === 'available' ? 'teal' : 'amber'}>
-      {statusLabels[track.status]}
+    <StatusBadge variant={publishedCount > 0 ? 'teal' : 'amber'}>
+      {publishedCount > 0
+        ? `${publishedCount} ${publishedCount === 1 ? 'lesson' : 'lessons'} available`
+        : 'Planned · Coming soon'}
     </StatusBadge>
   </div>
 
   <h3 id={`track-title-${track.id}`} class="track-card__title">
-    {track.title}
+    <a href={trackHref}>{track.title}</a>
   </h3>
 
   <p class="track-card__summary">{track.summary}</p>
 
   <div class="track-card__topics">
-    <p class="track-card__topics-label">Planned topics</p>
-    <ul class="track-card__topics-list">
-      {track.sampleTopics.map((topic) => (
-        <li>{topic}</li>
-      ))}
-    </ul>
+    {publishedCount > 0 ? (
+      <>
+        <p class="track-card__topics-label">Published lessons</p>
+        <ul class="track-card__topics-list">
+          {lessons.map((lesson) => (
+            <li>
+              <a href={lesson.href}>{lesson.title}</a>
+            </li>
+          ))}
+        </ul>
+      </>
+    ) : (
+      <>
+        <p class="track-card__topics-label">Planned topics</p>
+        <ul class="track-card__topics-list">
+          {track.sampleTopics.map((topic) => (
+            <li>{topic}</li>
+          ))}
+        </ul>
+      </>
+    )}
+  </div>
+
+  <div class="track-card__footer">
+    <a href={trackHref} class="track-card__link">
+      Explore {track.title} <span aria-hidden="true">&rarr;</span>
+    </a>
   </div>
 </article>
 
@@ -80,6 +101,16 @@ const statusLabels: Record<LearningTrackInfo['status'], string> = {
     font-weight: 700;
   }
 
+  .track-card__title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .track-card__title a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
   .track-card__summary {
     font-size: 0.95rem;
     line-height: 1.6;
@@ -105,8 +136,22 @@ const statusLabels: Record<LearningTrackInfo['status'], string> = {
     padding-left: 1.1rem;
     display: flex;
     flex-direction: column;
-    gap: 0.3rem;
+    gap: 0.35rem;
     font-size: 0.88rem;
     color: var(--color-text-secondary);
+  }
+
+  .track-card__footer {
+    padding-top: var(--space-2);
+  }
+
+  .track-card__link {
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .track-card__link:hover {
+    text-decoration: underline;
   }
 </style>

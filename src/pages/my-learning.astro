@@ -1,0 +1,64 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import MyLearningDashboard from '../components/learning/MyLearningDashboard';
+import StatusBadge from '../components/ui/StatusBadge.astro';
+import { getPublishedLessons, toLessonSummary } from '../utils/lessons';
+import { LEARNING_TRACKS } from '../utils/tracks';
+import { withBase } from '../utils/url';
+
+const publishedSummaries = (await getPublishedLessons()).map(toLessonSummary);
+---
+
+<MainLayout
+  title="My Learning — VisionLab"
+  description="Review your locally saved lesson completions, track progress, and quiz scores in VisionLab."
+>
+  <section class="section">
+    <div class="container">
+      <header class="mylearning-hero">
+        <div class="mylearning-hero__badges">
+          <StatusBadge variant="accent">Browser-Only Progress</StatusBadge>
+          <StatusBadge variant="neutral">No Sign-In Required</StatusBadge>
+        </div>
+        <h1 class="mylearning-hero__title">My Learning</h1>
+        <p class="mylearning-hero__intro">
+          Track which lessons you have finished and review your Knowledge Check
+          scores across all five VisionLab tracks.
+        </p>
+      </header>
+
+      <MyLearningDashboard
+        client:load
+        lessons={publishedSummaries}
+        tracks={LEARNING_TRACKS}
+        exploreHref={withBase('/explore/')}
+        roadmapHref={withBase('/roadmap/')}
+      />
+    </div>
+  </section>
+</MainLayout>
+
+<style>
+  .mylearning-hero {
+    max-width: 46rem;
+    margin-bottom: var(--space-6);
+  }
+
+  .mylearning-hero__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+
+  .mylearning-hero__title {
+    font-size: clamp(1.9rem, 3.5vw, 2.55rem);
+    font-weight: 800;
+    margin-bottom: var(--space-3);
+  }
+
+  .mylearning-hero__intro {
+    font-size: 1.05rem;
+    line-height: 1.7;
+  }
+</style>

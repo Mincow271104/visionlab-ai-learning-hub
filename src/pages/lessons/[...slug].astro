@@ -1,0 +1,41 @@
+---
+import { render } from 'astro:content';
+import LessonLayout from '../../layouts/LessonLayout.astro';
+import {
+  getAdjacentLessons,
+  getPublishedLessons,
+  type LessonEntry,
+} from '../../utils/lessons';
+
+export async function getStaticPaths() {
+  const published = await getPublishedLessons();
+  return published.map((lesson) => ({
+    params: { slug: lesson.id },
+    props: { lesson },
+  }));
+}
+
+interface Props {
+  lesson: LessonEntry;
+}
+
+const { lesson } = Astro.props;
+const allPublished = await getPublishedLessons();
+const { previous, next } = getAdjacentLessons(allPublished, lesson.id);
+const { Content, headings } = await render(lesson);
+---
+
+<LessonLayout
+  lessonId={lesson.id}
+  title={lesson.data.title}
+  description={lesson.data.description}
+  track={lesson.data.track}
+  difficulty={lesson.data.difficulty}
+  estimatedMinutes={lesson.data.estimatedMinutes}
+  tags={lesson.data.tags}
+  headings={headings}
+  previousLesson={previous}
+  nextLesson={next}
+>
+  <Content />
+</LessonLayout>

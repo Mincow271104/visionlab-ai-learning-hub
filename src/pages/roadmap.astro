@@ -1,0 +1,116 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import RoadmapTrackCard from '../components/learning/RoadmapTrackCard.astro';
+import SectionHeading from '../components/ui/SectionHeading.astro';
+import StatusBadge from '../components/ui/StatusBadge.astro';
+import { getPublishedLessons, toLessonSummary } from '../utils/lessons';
+import { LEARNING_TRACKS } from '../utils/tracks';
+import { withBase } from '../utils/url';
+
+const publishedEntries = await getPublishedLessons();
+const publishedSummaries = publishedEntries.map(toLessonSummary);
+const firstLesson = publishedSummaries[0];
+---
+
+<MainLayout
+  title="Learning Roadmap — VisionLab"
+  description="Follow the five-stage VisionLab learning sequence from AI fundamentals to computer vision and large language models."
+>
+  <section class="section">
+    <div class="container">
+      <div class="roadmap-hero">
+        <div class="roadmap-hero__badges">
+          <StatusBadge variant="accent">Guided Learning Path</StatusBadge>
+          <StatusBadge variant="teal">
+            {publishedSummaries.length} published lessons across 5 tracks
+          </StatusBadge>
+        </div>
+
+        <h1 class="roadmap-hero__title">VisionLab Learning Roadmap</h1>
+        <p class="roadmap-hero__intro">
+          New to artificial intelligence? Follow these five stages in order to
+          build intuition step by step before diving into deeper technical
+          topics. Already know what you want to learn? Jump to any track below
+          or browse freely in{' '}
+          <a href={withBase('/explore/')}>Explore Lessons</a>.
+        </p>
+
+        {firstLesson && (
+          <div class="roadmap-hero__actions">
+            <a href={firstLesson.href} class="btn btn--primary">
+              Start at Stage 1: {firstLesson.title}
+            </a>
+            <a href={withBase('/my-learning/')} class="btn btn--secondary">
+              View My Learning Progress
+            </a>
+          </div>
+        )}
+      </div>
+
+      <SectionHeading
+        eyebrow="Five-Stage Curriculum"
+        title="Recommended sequence"
+        description="Each stage builds on concepts from the previous one. Tracks show their currently published lessons alongside upcoming topic areas."
+      />
+
+      <div class="roadmap-grid">
+        {LEARNING_TRACKS.map((track) => {
+          const trackLessons = publishedSummaries.filter(
+            (lesson) => lesson.track === track.id
+          );
+          return <RoadmapTrackCard track={track} lessons={trackLessons} />;
+        })}
+      </div>
+    </div>
+  </section>
+</MainLayout>
+
+<style>
+  .roadmap-hero {
+    max-width: 48rem;
+    margin-bottom: var(--space-10);
+  }
+
+  .roadmap-hero__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+
+  .roadmap-hero__title {
+    font-size: clamp(1.9rem, 3.5vw, 2.6rem);
+    font-weight: 800;
+    margin-bottom: var(--space-3);
+  }
+
+  .roadmap-hero__intro {
+    font-size: 1.06rem;
+    line-height: 1.7;
+    margin-bottom: var(--space-5);
+  }
+
+  .roadmap-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .roadmap-grid {
+    display: grid;
+    gap: var(--space-5);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 680px) {
+    .roadmap-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1040px) {
+    .roadmap-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

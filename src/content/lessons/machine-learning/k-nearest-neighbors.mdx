@@ -1,0 +1,422 @@
+---
+title: "Understanding K-Nearest Neighbors (KNN)"
+description: "Learn how K-Nearest Neighbors predicts labels from nearby labeled examples, why choosing K and scaling features matter, and where KNN shines or struggles."
+track: "machine-learning"
+difficulty: "beginner"
+estimatedMinutes: 11
+order: 3
+tags:
+  - "knn"
+  - "classification"
+  - "distance-metrics"
+  - "instance-based-learning"
+status: "published"
+---
+
+import Callout from '../../../components/learning/Callout.astro';
+import DiagramCaption from '../../../components/learning/DiagramCaption.astro';
+import KnowledgeCheck from '../../../components/learning/KnowledgeCheck';
+import StepWalkthrough from '../../../components/learning/StepWalkthrough.astro';
+import { getLessonHref, getTrackHref } from '../../../utils/lessons';
+
+## 1. Introduction
+
+Suppose you pick up an unfamiliar piece of fruit at a market and want to guess whether it is an orange or a lemon. Instead of consulting a long rulebook, you look at the fruits sitting closest to it on the table—checking which ones have nearly the same size, weight, and color.
+
+**K-Nearest Neighbors (KNN)** turns that simple idea into a classic machine learning algorithm. Rather than learning a compact formula or decision line ahead of time, KNN stores labeled examples and predicts the label of a new input by looking at the **`K` closest examples** in its feature space.
+
+Understanding KNN gives beginners a clear look at how **similarity** and **distance** work in machine learning—and why preparing your input measurements carefully is just as important as picking an algorithm.
+
+## 2. Learning Objectives
+
+By the end of this lesson, you will be able to:
+
+- Explain in plain English how **K-Nearest Neighbors (KNN)** classifies a new input using nearby labeled examples.
+- Describe how changing **`K`** (the number of neighbors considered) trades off sensitivity to noise against overly broad smoothing.
+- Explain why **feature scaling** is critical before computing distances between examples.
+- Identify practical strengths, computational costs, and common limitations of KNN.
+
+## 3. Intuitive Explanation
+
+Think about estimating the style or price bracket of a house that just went on sale on your street.
+
+If you ask only the **single next-door house (`K = 1`)**, your estimate could be thrown off if that neighbor happens to be an unusual outlier—say, a tiny cottage next to standard family homes, or a house renovated far beyond the rest of the block.
+
+If instead you check the **`K = 5` nearest similar houses**, one quirky neighbor no longer dominates. The shared characteristics of the local neighborhood guide a steadier prediction.
+
+KNN works the same way on data points:
+
+- Every previously labeled example becomes a point on a feature map (for instance, plotting **sweetness** on one axis and **weight** on another).
+- When a new unlabeled point arrives, KNN measures straight-line distance from the new point to the stored examples.
+- It gathers the **`K`** closest points and lets them **vote** on the predicted category (or averages their numbers in a regression task).
+
+<Callout type="note" title="Lazy Learning vs. Eager Learning">
+Models like Support Vector Machines spend time up front finding boundary weights during training. KNN is often called an <strong>instance-based</strong> or <strong>lazy</strong> learner because it mostly stores the training examples during "training" and waits until prediction time to compare distances against them.
+</Callout>
+
+## 4. Visual Explanation
+
+The diagram below shows how the same unlabeled query point (**★**) receives two different predictions depending on whether you consult its **`K = 3`** closest neighbors or expand to **`K = 7`**.
+
+<DiagramCaption
+  label="Figure 1"
+  caption="Changing K changes the neighborhood vote: within the inner K = 3 radius, Class A leads 2 to 1; expanding to K = 7 brings in more nearby Class B points, flipping the majority vote to Class B (5 to 2)."
+>
+  <svg
+    viewBox="0 0 680 300"
+    role="img"
+    aria-labelledby="knn-diagram-title knn-diagram-desc"
+  >
+    <title id="knn-diagram-title">{"K-Nearest Neighbors prediction for K = 3 versus K = 7"}</title>
+    <desc id="knn-diagram-desc">{"2D feature plot showing Class A blue circles on the left and Class B teal diamonds on the right, with a central amber query star. An inner dashed circle encloses K = 3 nearest points (2 Class A, 1 Class B). A larger dashed circle encloses K = 7 nearest points (2 Class A, 5 Class B). A side panel summarizes how the majority vote changes from Class A to Class B."}</desc>
+    {/* Plot background */}
+    <rect
+      x="18"
+      y="16"
+      width="370"
+      height="262"
+      rx="14"
+      fill="var(--color-surface)"
+      stroke="var(--color-border-strong)"
+      strokeWidth="1.5"
+    />
+    {/* Subtle axis lines */}
+    <line
+      x1="46"
+      y1="250"
+      x2="366"
+      y2="250"
+      stroke="var(--color-border-strong)"
+      strokeWidth="1.3"
+    />
+    <line
+      x1="46"
+      y1="32"
+      x2="46"
+      y2="250"
+      stroke="var(--color-border-strong)"
+      strokeWidth="1.3"
+    />
+    <text x="206" y="270" textAnchor="middle" fontSize="11.5" fontWeight="600" fill="var(--color-text-secondary)">{"Feature x₁ (scaled)"}</text>
+    <text
+      x="32"
+      y="142"
+      textAnchor="middle"
+      fontSize="11.5"
+      fontWeight="600"
+      fill="var(--color-text-secondary)"
+      transform="rotate(-90 32 142)"
+    >{"Feature x₂ (scaled)"}</text>
+    {/* Concentric K neighborhoods centered at query star (190, 145) */}
+    <circle
+      cx="190"
+      cy="145"
+      r="104"
+      fill="var(--color-teal-soft)"
+      fillOpacity="0.28"
+      stroke="var(--color-teal)"
+      strokeWidth="2"
+      strokeDasharray="6 4"
+    />
+    <circle
+      cx="190"
+      cy="145"
+      r="56"
+      fill="var(--color-accent-soft)"
+      fillOpacity="0.45"
+      stroke="var(--color-accent)"
+      strokeWidth="2.2"
+      strokeDasharray="5 3"
+    />
+    {/* Neighborhood labels */}
+    <text x="190" y="108" textAnchor="middle" fontSize="11" fontWeight="700" fill="var(--color-accent)">{"K = 3"}</text>
+    <text x="150" y="64" textAnchor="middle" fontSize="11" fontWeight="700" fill="var(--color-teal)">{"K = 7"}</text>
+    {/* Points inside K = 3 (radius 56 around 190, 145) */}
+    <circle cx="154" cy="128" r="6.5" fill="#2563eb" stroke="#ffffff" strokeWidth="1.5" />
+    <circle cx="162" cy="182" r="6.5" fill="#2563eb" stroke="#ffffff" strokeWidth="1.5" />
+    <rect
+      x="226"
+      y="124"
+      width="12"
+      height="12"
+      rx="2"
+      fill="#0f766e"
+      stroke="#ffffff"
+      strokeWidth="1.5"
+      transform="rotate(45 232 130)"
+    />
+    {/* Additional 4 points between K = 3 and K = 7 (radius 56..104) */}
+    <rect
+      x="250"
+      y="102"
+      width="12"
+      height="12"
+      rx="2"
+      fill="#0f766e"
+      stroke="#ffffff"
+      strokeWidth="1.5"
+      transform="rotate(45 256 108)"
+    />
+    <rect
+      x="258"
+      y="168"
+      width="12"
+      height="12"
+      rx="2"
+      fill="#0f766e"
+      stroke="#ffffff"
+      strokeWidth="1.5"
+      transform="rotate(45 264 174)"
+    />
+    <rect
+      x="216"
+      y="218"
+      width="12"
+      height="12"
+      rx="2"
+      fill="#0f766e"
+      stroke="#ffffff"
+      strokeWidth="1.5"
+      transform="rotate(45 222 224)"
+    />
+    <rect
+      x="210"
+      y="50"
+      width="12"
+      height="12"
+      rx="2"
+      fill="#0f766e"
+      stroke="#ffffff"
+      strokeWidth="1.5"
+      transform="rotate(45 216 56)"
+    />
+    {/* Further stored examples outside K = 7 (radius > 112) */}
+    <circle cx="78" cy="86" r="6.5" fill="#2563eb" stroke="#ffffff" strokeWidth="1.5" />
+    <circle cx="66" cy="152" r="6.5" fill="#2563eb" stroke="#ffffff" strokeWidth="1.5" />
+    <circle cx="96" cy="212" r="6.5" fill="#2563eb" stroke="#ffffff" strokeWidth="1.5" />
+    <circle cx="122" cy="54" r="6.5" fill="#2563eb" stroke="#ffffff" strokeWidth="1.5" />
+    <rect
+      x="306"
+      y="76"
+      width="12"
+      height="12"
+      rx="2"
+      fill="#0f766e"
+      stroke="#ffffff"
+      strokeWidth="1.5"
+      transform="rotate(45 312 82)"
+    />
+    <rect
+      x="312"
+      y="150"
+      width="12"
+      height="12"
+      rx="2"
+      fill="#0f766e"
+      stroke="#ffffff"
+      strokeWidth="1.5"
+      transform="rotate(45 318 156)"
+    />
+    <rect
+      x="292"
+      y="212"
+      width="12"
+      height="12"
+      rx="2"
+      fill="#0f766e"
+      stroke="#ffffff"
+      strokeWidth="1.5"
+      transform="rotate(45 298 218)"
+    />
+    {/* Unlabeled Query Point (star) */}
+    <polygon
+      points="190,134 193,142 201,142 195,147 197,155 190,150 183,155 185,147 179,142 187,142"
+      fill="#d97706"
+      stroke="#ffffff"
+      strokeWidth="1.3"
+    />
+    <text x="190" y="170" textAnchor="middle" fontSize="11" fontWeight="700" fill="#b45309">{"Query ★"}</text>
+    {/* Right-side Vote Comparison Cards */}
+    <rect
+      x="408"
+      y="16"
+      width="254"
+      height="118"
+      rx="12"
+      fill="var(--color-surface)"
+      stroke="var(--color-accent)"
+      strokeWidth="1.6"
+    />
+    <text x="424" y="42" fontSize="13.5" fontWeight="700" fill="var(--color-accent)">{"Case 1: Choose K = 3"}</text>
+    <text x="424" y="65" fontSize="12" fill="var(--color-text-secondary)">{"● Class A: 2 nearest neighbors"}</text>
+    <text x="424" y="85" fontSize="12" fill="var(--color-text-secondary)">{"◆ Class B: 1 nearest neighbor"}</text>
+    <text x="424" y="112" fontSize="12.5" fontWeight="700" fill="var(--color-text)">{"Majority vote → Class A"}</text>
+    <rect
+      x="408"
+      y="148"
+      width="254"
+      height="130"
+      rx="12"
+      fill="var(--color-surface)"
+      stroke="var(--color-teal)"
+      strokeWidth="1.6"
+    />
+    <text x="424" y="174" fontSize="13.5" fontWeight="700" fill="var(--color-teal)">{"Case 2: Choose K = 7"}</text>
+    <text x="424" y="197" fontSize="12" fill="var(--color-text-secondary)">{"● Class A: 2 nearest neighbors"}</text>
+    <text x="424" y="217" fontSize="12" fill="var(--color-text-secondary)">{"◆ Class B: 5 nearest neighbors"}</text>
+    <text x="424" y="244" fontSize="12.5" fontWeight="700" fill="var(--color-text)">{"Majority vote → Class B"}</text>
+    <text x="424" y="264" fontSize="11" fill="var(--color-text-muted)">{"Tune K using validation data"}</text>
+  </svg>
+</DiagramCaption>
+
+## 5. Step-by-Step Walkthrough
+
+Suppose each stored point has two scaled features, `x = (x₁, x₂)`, and we receive a new query point `q = (q₁, q₂)`.
+
+The standard straight-line (**Euclidean**) distance between `x` and `q` is:
+
+`distance = √((x₁ − q₁)² + (x₂ − q₂)²)`
+
+Here each term measures how far apart the two points sit along one feature (`x₁ − q₁` and `x₂ − q₂`), squares those differences so negative signs do not cancel out, adds them together, and takes the square root.
+
+<StepWalkthrough
+  heading="How KNN Makes a Prediction"
+  steps={[
+    {
+      title: '1. Store the labeled training examples',
+      detail:
+        'Keep the training dataset in memory as pairs of measured feature vectors and known labels (for example, fruit diameter and sweetness paired with "apple" or "orange").',
+    },
+    {
+      title: '2. Scale every feature onto a comparable range',
+      detail:
+        'Before measuring distance, normalize or standardize features so a column measured in large numbers (such as house price in dollars) does not overwhelm a column measured in small numbers (such as number of bedrooms).',
+    },
+    {
+      title: '3. Compute distances to the new query point',
+      detail:
+        'When a new unlabeled point arrives, measure the distance from that query point to every stored training example using a metric such as Euclidean distance.',
+    },
+    {
+      title: '4. Select the K closest neighbors',
+      detail:
+        'Sort the distances from smallest to largest and keep the K nearest training examples. Using an odd K (such as 3, 5, or 7) helps reduce exact ties in binary classification.',
+    },
+    {
+      title: '5. Combine neighbor labels to predict',
+      detail:
+        'For classification, assign the class that receives the most votes among the K neighbors (optionally giving slightly closer neighbors heavier votes). For regression, predict the average target value of the K neighbors.',
+    },
+  ]}
+/>
+
+## 6. Interactive Demonstration
+
+This lesson uses a calibrated multi-radius diagram rather than a separate interactive sandbox because the core geometric takeaway—how expanding from `K = 3` to `K = 7` changes the enclosed neighborhood around a single query point—is clearest when both radii appear side by side with exact vote counts.
+
+If you want to experiment hands-on with plotting Class A and Class B points on a 2D feature grid and seeing how nearby points define boundaries, try the interactive plot in <a href={getLessonHref('machine-learning/understanding-svm-and-kernel-trick')}>Understanding SVM and the Kernel Trick</a>.
+
+## 7. Real-World Example
+
+Consider a small **customer support triage tool** or **sensor anomaly baseline**:
+
+- A robotics team tracks two normalized vibration and temperature readings from warehouse motors, labeled `"normal"` or `"needs inspection"`.
+- When a new motor reading arrives, KNN finds the `K = 5` most similar historical readings and checks how many required inspection—providing an immediate, easy-to-explain baseline because engineers can inspect the exact 5 past cases behind any alert.
+
+### Practical tradeoffs and limitations
+
+- **Slow predictions on huge datasets:** Checking distance against every stored example becomes expensive when you store millions of rows, unless you add specialized spatial indexes or approximate neighbor search.
+- **Unscaled features distort similarity:** Without feature scaling, whichever measurement happens to use larger numeric units controls almost the entire distance score.
+- **Curse of dimensionality:** When examples have hundreds or thousands of noisy features, points spread far apart in high-dimensional space, making "nearest" neighbors less informative unless irrelevant features are removed or compressed first.
+
+## 8. Common Misconceptions
+
+- **Misconception:** "KNN learns compact decision weights during training and throws away the training dataset."  
+  **Reality:** KNN does not summarize the dataset into a small weight formula—it keeps the training examples and computes distances to them at prediction time.
+- **Misconception:** "`K = 1` is always best because it gets 100% accuracy on the training examples."  
+  **Reality:** Checking `K = 1` on the training set trivially matches every point to itself (zero distance!), which hides **overfitting** to single noisy or mislabeled points. Always evaluate `K` on a separate validation set.
+- **Misconception:** "The units of your input columns do not matter because KNN compares numbers automatically."  
+  **Reality:** A 1-unit difference in salary (`$10,000` vs. `$10,001`) is numerically tiny next to `1` year of experience—or huge if salary is `50,000` vs. `60,000` and experience is `2` vs. `5`. Scaling puts features on an equal footing.
+
+## 9. Knowledge Check
+
+<KnowledgeCheck
+  client:visible
+  lessonId="machine-learning/k-nearest-neighbors"
+  questions={[
+    {
+      question:
+        'How does K-Nearest Neighbors (KNN) predict the category of a new data point?',
+      options: [
+        'By fitting a single straight line and discarding the training data',
+        'By measuring distance to stored labeled examples and taking a majority vote of the K closest neighbors',
+        'By training a deep neural network for thousands of epochs',
+        'By picking a random label from the dataset',
+      ],
+      correctIndex: 1,
+      explanation:
+        'KNN stores labeled examples and classifies a new query point by finding the K closest stored points (in feature space) and choosing their majority class.',
+    },
+    {
+      question:
+        'What usually happens when K is set too small (for example, K = 1) on noisy real-world data?',
+      options: [
+        'Predictions become overly sensitive to individual noisy points or outliers (overfitting)',
+        'The model refuses to predict any class',
+        'All points in the dataset get identical predictions regardless of location',
+        'Distance calculations run slower because every neighbor is averaged',
+      ],
+      correctIndex: 0,
+      explanation:
+        'With K = 1, a single noisy or mislabeled neighbor next to the query point decides the entire prediction, creating jagged boundaries that overfit training quirks.',
+    },
+    {
+      question:
+        'Why should features usually be scaled before applying KNN with Euclidean distance?',
+      options: [
+        'To delete all text labels from the dataset',
+        'So features measured in larger numerical ranges do not dominate the distance calculation',
+        'Because KNN only works when every feature equals zero',
+        'To turn classification automatically into unsupervised clustering',
+      ],
+      correctIndex: 1,
+      explanation:
+        'Euclidean distance adds squared coordinate differences directly. Without scaling, a feature spanning 0–100,000 swamps a feature spanning 0–1.',
+    },
+    {
+      question:
+        'Compared with a linear model that stores only a few weights, what is a key cost of standard KNN at prediction time?',
+      options: [
+        'It requires recalculating or searching distances against stored training examples for every new query',
+        'It cannot handle more than two classes',
+        'It only works on grayscale images',
+        'It never needs labeled examples',
+      ],
+      correctIndex: 0,
+      explanation:
+        'Because standard KNN defers work until query time, prediction memory and runtime grow with the size of the stored training set.',
+    },
+  ]}
+/>
+
+## 10. Key Takeaways
+
+- **K-Nearest Neighbors (KNN)** predicts labels by finding the **`K` closest labeled examples** and taking a majority vote (or average for numeric targets).
+- Choosing **`K`** balances sensitivity against smoothness: tiny `K` (like `1`) overfits noise, while huge `K` blurs local boundaries—tune `K` using validation data.
+- **Feature scaling** prevents large-unit columns from overpowering small-unit columns inside distance calculations.
+- KNN is intuitive and transparent, though prediction cost grows with stored dataset size and performance degrades with many uninformative features.
+
+## 11. Related Lessons & Track
+
+- Previous: <a href={getLessonHref('machine-learning/understanding-svm-and-kernel-trick')}>Understanding SVM and the Kernel Trick</a>
+- Next: <a href={getLessonHref('deep-learning/understanding-neural-networks')}>Understanding Neural Networks</a>
+- Review dataset splits and overfitting fundamentals in <a href={getLessonHref('machine-learning/how-machine-learning-works')}>How Does Machine Learning Work?</a>
+- Browse track: <a href={getTrackHref('machine-learning')}>Machine Learning Track</a>
+
+<Callout type="tip" title="References for Further Reading">
+  <ul>
+    <li>Cover, T., &amp; Hart, P. (1967). <em>Nearest Neighbor Pattern Classification</em>, IEEE Transactions on Information Theory (foundational paper introducing nearest-neighbor classification analysis).</li>
+    <li>Hastie, T., Tibshirani, R., &amp; Friedman, J. <em>The Elements of Statistical Learning</em> (Chapter 2 &amp; Chapter 13: prototype methods, bias–variance tradeoff with K, and high-dimensional distance behavior).</li>
+    <li>scikit-learn User Guide: <em>Nearest Neighbors</em> (practical overview of brute-force vs. spatial-tree neighbor search and feature scaling).</li>
+  </ul>
+</Callout>

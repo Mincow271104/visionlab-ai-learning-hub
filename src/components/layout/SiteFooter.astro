@@ -2,10 +2,10 @@
 import { withBase } from '../../utils/url';
 
 const currentYear = new Date().getFullYear();
-const overviewHref = withBase('/#overview');
-const roadmapHref = withBase('/#roadmap');
-const featuredHref = withBase('/#featured');
-const plannedHref = withBase('/#planned-sections');
+const homeHref = withBase('/');
+const roadmapHref = withBase('/roadmap/');
+const exploreHref = withBase('/explore/');
+const myLearningHref = withBase('/my-learning/');
 ---
 
 <footer class="site-footer">
@@ -14,19 +14,19 @@ const plannedHref = withBase('/#planned-sections');
       <p class="site-footer__title">VisionLab — AI &amp; Computer Vision Learning Hub</p>
       <p class="site-footer__tagline">See It. Try It. Understand It.</p>
       <p class="site-footer__note">
-        Built as a static learning site with Astro. Future learning progress is
-        designed to stay local in your browser with no accounts or tracking.
+        Built as a static learning site with Astro. Your lesson completion and
+        quiz scores stay local in your browser with no accounts or tracking.
       </p>
     </div>
 
     <div class="site-footer__links">
       <div>
-        <h2 class="site-footer__heading">On This Page</h2>
+        <h2 class="site-footer__heading">Learn</h2>
         <ul>
-          <li><a href={overviewHref}>Overview</a></li>
+          <li><a href={homeHref}>Home</a></li>
           <li><a href={roadmapHref}>Learning Roadmap</a></li>
-          <li><a href={featuredHref}>Featured Learning</a></li>
-          <li><a href={plannedHref}>Planned Sections</a></li>
+          <li><a href={exploreHref}>Explore Lessons</a></li>
+          <li><a href={myLearningHref}>My Learning</a></li>
         </ul>
       </div>
       <div>
@@ -47,7 +47,7 @@ const plannedHref = withBase('/#planned-sections');
   </div>
 
   <div class="container site-footer__bottom">
-    <p>&copy; {currentYear} VisionLab. Package 1 Project Foundation.</p>
+    <p>&copy; {currentYear} VisionLab. Built with Astro, MDX, and React.</p>
   </div>
 </footer>
 

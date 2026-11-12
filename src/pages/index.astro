@@ -1,64 +1,63 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
+import LessonCard from '../components/learning/LessonCard.astro';
 import RoadmapTrackCard from '../components/learning/RoadmapTrackCard.astro';
 import SectionHeading from '../components/ui/SectionHeading.astro';
 import StatusBadge from '../components/ui/StatusBadge.astro';
+import { getPublishedLessons, toLessonSummary } from '../utils/lessons';
 import { LEARNING_TRACKS } from '../utils/tracks';
+import { withBase } from '../utils/url';
 
-const featuredPrinciples = [
-  {
-    badge: 'Guided Learning',
-    title: 'A Clear, Staged Sequence',
-    description:
-      'Start from everyday intuition in AI Fundamentals and progress step by step toward Machine Learning, Deep Learning, Computer Vision, and Generative AI.',
-    status: 'Roadmap active · Lessons planned',
-  },
-  {
-    badge: 'Explore Freely',
-    title: 'Self-Contained Lessons & Search',
-    description:
-      'Prefer jumping straight to a specific concept? Upcoming lessons are authored independently so you can browse and filter by topic, difficulty, or tag.',
-    status: 'Searchable library · Coming soon',
-  },
-  {
-    badge: 'Interactive Intuition',
-    title: 'Visual Explanations Before Math',
-    description:
-      'Every topic introduces concrete analogies and labeled diagrams first, followed by bounded interactive demonstrations where manipulation clarifies the idea.',
-    status: 'Sandboxes · Coming in Package 2+',
-  },
-] as const;
+const publishedSummaries = (await getPublishedLessons()).map(toLessonSummary);
 
-const plannedSections = [
+const featuredIds = new Set([
+  'ai-fundamentals/what-is-artificial-intelligence',
+  'machine-learning/understanding-svm-and-kernel-trick',
+  'deep-learning/understanding-neural-networks',
+  'computer-vision/how-computers-see-images',
+]);
+
+const featuredLessons = publishedSummaries.filter((lesson) =>
+  featuredIds.has(lesson.id)
+);
+
+const platformStatus = [
   {
-    name: 'Project Shell & Learning Roadmap',
+    name: 'Guided 5-Track Roadmap',
     status: 'Available now',
     variant: 'teal' as const,
+    href: withBase('/roadmap/'),
     detail:
-      'Static Astro foundation, GitHub Pages base-path routing, theme support, and the 5-track curriculum overview.',
+      'Follow a structured five-stage sequence across AI Fundamentals, Machine Learning, Deep Learning, Computer Vision, and Generative AI.',
   },
   {
-    name: 'Core Lessons Library',
-    status: 'Coming soon',
-    variant: 'amber' as const,
+    name: `${publishedSummaries.length} Beginner-Friendly Lessons`,
+    status: 'Available now',
+    variant: 'teal' as const,
+    href: withBase('/explore/'),
     detail:
-      'Beginner-friendly MDX lessons authored against a shared 11-section teaching template with verified schema metadata.',
+      'Consistent 11-section articles teaching visual intuition before equations, with original diagrams and Knowledge Check quizzes.',
   },
   {
-    name: 'Interactive Visualizers',
-    status: 'Coming soon',
-    variant: 'amber' as const,
+    name: 'Interactive Conceptual Sandboxes',
+    status: 'Available now',
+    variant: 'teal' as const,
+    href: withBase('/lessons/machine-learning/understanding-svm-and-kernel-trick/'),
     detail:
-      'Focused React demonstrations (including SVM boundaries, neural network layers, and image convolutions) added alongside their lessons.',
+      'Explore geometric margins in the SVM Playground and step through real forward-pass calculations in the Neural Network Explorer.',
   },
   {
-    name: 'Search & Local Browser Progress',
-    status: 'Coming soon',
-    variant: 'amber' as const,
+    name: 'Local Browser Progress & Quiz History',
+    status: 'Available now',
+    variant: 'teal' as const,
+    href: withBase('/my-learning/'),
     detail:
-      'Client-side filtering by title, description, and tags, plus optional browser-only progress notes with no sign-in required.',
+      'Track lesson completion and quiz scores directly in your browser with no account required, plus planned expansion in future packages.',
   },
 ] as const;
+
+const roadmapHref = withBase('/roadmap/');
+const exploreHref = withBase('/explore/');
 ---
 
 <MainLayout
@@ -69,7 +68,9 @@ const plannedSections = [
     <div class="container hero__grid">
       <div class="hero__content">
         <div class="hero__badges">
-          <StatusBadge variant="accent">Package 1 · Project Foundation</StatusBadge>
+          <StatusBadge variant="accent">
+            {publishedSummaries.length} Interactive Lessons Live
+          </StatusBadge>
           <StatusBadge variant="neutral">Beginner-Friendly</StatusBadge>
         </div>
 
@@ -80,15 +81,18 @@ const plannedSections = [
 
         <p class="hero__intro">
           Artificial intelligence and computer vision do not have to begin with
-          dense equations or prior coding experience. VisionLab is a structured
-          learning hub designed to help curious beginners build accurate mental
-          models through visual intuition, clear analogies, and hands-on
-          exploration.
+          dense equations or prior coding experience. VisionLab helps curious
+          beginners build accurate mental models through clear analogies,
+          labeled diagrams, and hands-on conceptual demonstrations.
         </p>
 
         <div class="hero__actions">
-          <a href="#roadmap" class="btn btn--primary">Explore Learning Roadmap</a>
-          <a href="#featured" class="btn btn--secondary">How VisionLab Teaches</a>
+          <a href={roadmapHref} class="btn btn--primary">
+            Start Guided Roadmap
+          </a>
+          <a href={exploreHref} class="btn btn--secondary">
+            Explore All Lessons
+          </a>
         </div>
       </div>
 
@@ -273,16 +277,25 @@ const plannedSections = [
   <section id="roadmap" class="section section--subtle" aria-labelledby="roadmap-heading">
     <div class="container">
       <SectionHeading
-        eyebrow="Learning Roadmap Preview"
+        eyebrow="Learning Roadmap"
         headingId="roadmap-heading"
         title="Five tracks from AI basics to computer vision and generative models"
-        description="This roadmap outlines the full five-track curriculum structure. Track cards below indicate planned learning stages while individual lessons are authored in upcoming packages."
+        description="Select any track to view its published lessons in recommended order, or open the full roadmap to see your sequence."
       />
 
       <div class="tracks-grid">
-        {LEARNING_TRACKS.map((track) => (
-          <RoadmapTrackCard track={track} />
-        ))}
+        {LEARNING_TRACKS.map((track) => {
+          const trackLessons = publishedSummaries.filter(
+            (lesson) => lesson.track === track.id
+          );
+          return <RoadmapTrackCard track={track} lessons={trackLessons} />;
+        })}
+      </div>
+
+      <div class="section-cta">
+        <a href={roadmapHref} class="btn btn--secondary">
+          Open Full Learning Roadmap &rarr;
+        </a>
       </div>
     </div>
   </section>
@@ -290,23 +303,22 @@ const plannedSections = [
   <section id="featured" class="section" aria-labelledby="featured-heading">
     <div class="container">
       <SectionHeading
-        eyebrow="Featured Learning Area"
+        eyebrow="Featured Lessons"
         headingId="featured-heading"
-        title="Designed for clarity, visual intuition, and honest exploration"
-        description="VisionLab combines a guided track sequence with self-contained lessons so learners can either follow a structured path or look up a specific idea."
+        title="Start with core intuition or jump into interactive sandboxes"
+        description="Every lesson below is self-contained and includes diagrams, step-by-step walkthroughs, real-world examples, and a Knowledge Check."
       />
 
       <div class="featured-grid">
-        {featuredPrinciples.map((item) => (
-          <article class="feature-card">
-            <div class="feature-card__meta">
-              <StatusBadge variant="accent">{item.badge}</StatusBadge>
-            </div>
-            <h3 class="feature-card__title">{item.title}</h3>
-            <p class="feature-card__description">{item.description}</p>
-            <p class="feature-card__status">{item.status}</p>
-          </article>
+        {featuredLessons.map((lesson) => (
+          <LessonCard lesson={lesson} />
         ))}
+      </div>
+
+      <div class="section-cta">
+        <a href={exploreHref} class="btn btn--primary">
+          Search &amp; Filter All {publishedSummaries.length} Lessons &rarr;
+        </a>
       </div>
     </div>
   </section>
@@ -318,17 +330,19 @@ const plannedSections = [
   >
     <div class="container">
       <SectionHeading
-        eyebrow="Platform Status"
+        eyebrow="Platform Capabilities"
         headingId="planned-heading"
-        title="Planned sections and rollout transparency"
-        description="Package 1 establishes the website shell, lesson schema, authoring template, and deployment configuration. Sections marked Coming soon will open as their lessons and interactive tools are completed."
+        title="What you can explore in VisionLab today"
+        description="Core guided tracks, seven published lessons, interactive SVM and neural network explorers, client-side search, and local browser progress are live. Additional visualizers such as convolution demos remain planned for future expansion."
       />
 
       <div class="status-grid">
-        {plannedSections.map((item) => (
+        {platformStatus.map((item) => (
           <article class="status-card">
             <div class="status-card__header">
-              <h3 class="status-card__title">{item.name}</h3>
+              <h3 class="status-card__title">
+                <a href={item.href}>{item.name}</a>
+              </h3>
               <StatusBadge variant={item.variant}>{item.status}</StatusBadge>
             </div>
             <p class="status-card__detail">{item.detail}</p>
@@ -514,39 +528,16 @@ const plannedSections = [
     grid-template-columns: 1fr;
   }
 
-  @media (min-width: 800px) {
+  @media (min-width: 720px) {
     .featured-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
-  .feature-card {
+  .section-cta {
+    margin-top: var(--space-8);
     display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
-    padding: var(--space-6);
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-xs);
-  }
-
-  .feature-card__title {
-    font-size: 1.12rem;
-    font-weight: 700;
-  }
-
-  .feature-card__description {
-    font-size: 0.95rem;
-  }
-
-  .feature-card__status {
-    margin-top: auto;
-    padding-top: var(--space-3);
-    border-top: 1px solid var(--color-border);
-    font-size: 0.84rem;
-    font-weight: 600;
-    color: var(--color-text-muted);
+    justify-content: flex-start;
   }
 
   .status-grid {
@@ -580,6 +571,16 @@ const plannedSections = [
   .status-card__title {
     font-size: 1.05rem;
     font-weight: 700;
+  }
+
+  .status-card__title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .status-card__title a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
   }
 
   .status-card__detail {
