@@ -27,9 +27,9 @@ Live deployment target: <https://mincow271104.github.io/visionlab-ai-learning-hu
 ### Implemented Features (Package 1 & Package 2)
 
 - **Astro static site foundation & GitHub Pages deployment** configured with strict TypeScript, React integration, MDX integration, `.github/workflows/deploy.yml`, `site: "https://mincow271104.github.io"`, `base: "/visionlab-ai-learning-hub"`, and `withBase()` base-aware URL helpers.
-- **5-track curriculum & 7 published beginner lessons** validated by `src/content.config.ts` and `LessonLayout.astro`:
+- **5-track curriculum & 8 published beginner lessons** validated by `src/content.config.ts` and `LessonLayout.astro`:
   - **AI Fundamentals (`/tracks/ai-fundamentals/`):** *What Is Artificial Intelligence?*
-  - **Machine Learning (`/tracks/machine-learning/`):** *How Machine Learning Works*, *Understanding Support Vector Machines (SVMs) & the Kernel Trick*
+  - **Machine Learning (`/tracks/machine-learning/`):** *How Machine Learning Works*, *Understanding Support Vector Machines (SVMs) & the Kernel Trick*, *Understanding K-Nearest Neighbors (KNN)*
   - **Deep Learning (`/tracks/deep-learning/`):** *Understanding Neural Networks*
   - **Computer Vision (`/tracks/computer-vision/`):** *How Computers See Images*, *Introduction to Depth Estimation*
   - **Generative AI & Large Language Models (`/tracks/generative-ai/`):** *Understanding Large Language Models*
