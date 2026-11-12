@@ -1,0 +1,443 @@
+/* Shared styles for interactive React islands (KnowledgeCheck, LessonExplorer,
+   MyLearningDashboard, LessonCompletionButton, SVMPlayground, NeuralNetworkExplorer) */
+
+.vl-widget {
+  margin-block: var(--space-6);
+  padding: var(--space-5);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+@media (min-width: 640px) {
+  .vl-widget {
+    padding: var(--space-6);
+  }
+}
+
+.vl-widget__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-4);
+}
+
+.vl-widget__eyebrow {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-accent);
+  margin-bottom: var(--space-1);
+}
+
+.vl-widget__title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.vl-widget__goal {
+  font-size: 0.94rem;
+  color: var(--color-text-secondary);
+  margin-top: var(--space-2);
+}
+
+.vl-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface-elevated);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.vl-badge--accent {
+  background-color: var(--color-accent-soft);
+  color: var(--color-accent);
+  border-color: var(--color-accent-border);
+}
+
+.vl-badge--teal {
+  background-color: var(--color-teal-soft);
+  color: var(--color-teal);
+  border-color: var(--color-teal-border);
+}
+
+.vl-badge--amber {
+  background-color: var(--color-amber-soft);
+  color: var(--color-amber);
+  border-color: var(--color-amber-border);
+}
+
+.vl-notice {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-amber-border);
+  background-color: var(--color-amber-soft);
+  color: var(--color-text);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.vl-notice--info {
+  border-color: var(--color-accent-border);
+  background-color: var(--color-accent-soft);
+}
+
+.vl-notice--success {
+  border-color: var(--color-teal-border);
+  background-color: var(--color-teal-soft);
+}
+
+.vl-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 2.5rem;
+  padding: 0.55rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-strong);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.vl-btn:hover:not(:disabled) {
+  background-color: var(--color-surface-elevated);
+}
+
+.vl-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.vl-btn--primary {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+.vl-btn--primary:hover:not(:disabled) {
+  background-color: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
+  color: var(--color-on-accent);
+}
+
+.vl-btn--active {
+  background-color: var(--color-accent-soft);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.vl-btn--teal {
+  background-color: var(--color-teal-soft);
+  border-color: var(--color-teal-border);
+  color: var(--color-teal);
+}
+
+.vl-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.vl-field label,
+.vl-field__label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.vl-input,
+.vl-select {
+  width: 100%;
+  min-height: 2.55rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-strong);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 0.94rem;
+}
+
+.vl-range {
+  width: 100%;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+
+.vl-mono {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+}
+
+/* Lesson card / grid helpers for explorer & dashboard */
+.vl-card-grid {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 720px) {
+  .vl-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1040px) {
+  .vl-card-grid--three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.vl-lesson-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.vl-lesson-card:hover {
+  border-color: var(--color-accent-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.vl-lesson-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.vl-lesson-card__title {
+  font-size: 1.12rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.vl-lesson-card__title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.vl-lesson-card__title a:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
+.vl-lesson-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.vl-tag {
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface-elevated);
+  color: var(--color-text-secondary);
+  font-size: 0.76rem;
+  font-weight: 500;
+}
+
+/* Interactive visualizer layouts */
+.vl-sim-layout {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 900px) {
+  .vl-sim-layout {
+    grid-template-columns: 1.25fr 0.95fr;
+    align-items: start;
+  }
+}
+
+.vl-sim-canvas-wrap {
+  background-color: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
+}
+
+.vl-sim-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.vl-btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.vl-observe-box {
+  margin-top: var(--space-4);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
+  font-size: 0.9rem;
+}
+
+.vl-observe-box h4 {
+  font-size: 0.92rem;
+  margin-bottom: var(--space-2);
+}
+
+.vl-observe-box ul {
+  margin: 0;
+  padding-left: 1.15rem;
+  color: var(--color-text-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* KnowledgeCheck styles */
+.vl-quiz__progress {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.86rem;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-3);
+}
+
+.vl-quiz__question {
+  font-size: 1.04rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-4);
+}
+
+.vl-quiz__options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  border: 0;
+  padding: 0;
+  margin: 0 0 var(--space-4);
+}
+
+.vl-quiz__option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-strong);
+  background-color: var(--color-bg);
+  cursor: pointer;
+  transition:
+    border-color var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.vl-quiz__option:hover {
+  border-color: var(--color-accent);
+}
+
+.vl-quiz__option--selected {
+  border-color: var(--color-accent);
+  background-color: var(--color-accent-soft);
+}
+
+.vl-quiz__option--correct {
+  border-color: var(--color-teal);
+  background-color: var(--color-teal-soft);
+}
+
+.vl-quiz__option--incorrect {
+  border-color: var(--color-amber);
+  background-color: var(--color-amber-soft);
+}
+
+.vl-quiz__option input {
+  margin-top: 0.22rem;
+  accent-color: var(--color-accent);
+  flex-shrink: 0;
+}
+
+.vl-quiz__feedback {
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-4);
+  border: 1px solid var(--color-border);
+  font-size: 0.93rem;
+}
+
+.vl-quiz__feedback--correct {
+  background-color: var(--color-teal-soft);
+  border-color: var(--color-teal-border);
+}
+
+.vl-quiz__feedback--incorrect {
+  background-color: var(--color-amber-soft);
+  border-color: var(--color-amber-border);
+}
+
+.vl-quiz__feedback-title {
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-1);
+}
+
+/* Progress bar */
+.vl-progress-bar {
+  width: 100%;
+  height: 0.6rem;
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface-elevated);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+
+.vl-progress-bar__fill {
+  height: 100%;
+  background-color: var(--color-accent);
+  border-radius: var(--radius-full);
+  transition: width var(--transition-fast);
+}

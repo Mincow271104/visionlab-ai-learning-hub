@@ -1,0 +1,311 @@
+---
+title: "Understanding Large Language Models"
+description: "An intuitive beginner guide to Large Language Models (LLMs): tokens, next-token prediction, attention, Transformers, hallucinations, and responsible use."
+track: "generative-ai"
+difficulty: "beginner"
+estimatedMinutes: 15
+order: 1
+tags:
+  - generative-ai
+  - llm
+  - tokens
+  - attention
+  - transformers
+status: "published"
+---
+import Callout from '../../../components/learning/Callout.astro';
+import DiagramCaption from '../../../components/learning/DiagramCaption.astro';
+import StepWalkthrough from '../../../components/learning/StepWalkthrough.astro';
+import KnowledgeCheck from '../../../components/learning/KnowledgeCheck';
+import { getLessonHref, getTrackHref } from '../../../utils/lessons';
+
+## 1. Introduction
+
+Tools powered by **Large Language Models (LLMs)** can summarize articles, draft emails, explain code, and translate languages in a natural conversation. Because their replies read fluently, it is easy to imagine an LLM looking up pre-written answers in a giant digital encyclopedia—or thinking like a human mind.
+
+Neither mental picture is accurate. At its core, an LLM is a large neural network trained on massive collections of text to predict **what piece of text is most likely to come next**, one small chunk at a time. Understanding how that simple mechanism produces surprisingly flexible writing—and why it can still make confident mistakes—helps you use AI tools wisely.
+
+## 2. Learning Objectives
+
+By the end of this lesson, you will be able to:
+
+- Explain what **tokens** and **tokenization** are and why language models split text into word pieces rather than reading whole sentences at once.
+- Describe **next-token prediction** and how sequential generation builds full paragraphs step by step.
+- Understand at a beginner level how **attention** inside a **Transformer** helps the model connect relevant words across a context window.
+- Explain why LLMs can produce **hallucinations** (fluent but incorrect statements) and how to verify their outputs responsibly.
+
+## 3. Intuitive Explanation
+
+Suppose a friend reads half a sentence aloud and stops:
+
+> "Before crossing a busy street, always look both \_\_\_"
+
+Your brain immediately predicts **"ways"**—not because you looked up a dictionary entry for that exact sentence, but because years of reading and hearing English taught you how words, grammar, and real-world situations fit together.
+
+Now notice how context shifts the best prediction:
+
+> "Before deploying the new software update, always check the error \_\_\_"
+
+Here, **"logs"** or **"messages"** makes sense, while **"ways"** would sound wrong. Context shapes every prediction.
+
+An LLM scales that exact idea up to billions of learned numerical parameters inside a neural network. Instead of storing canned Q&amp;A pairs in a static database, it learns statistical patterns of language—grammar, concepts, tone, code structure, and common reasoning patterns—so it can generate the next chunk of text dynamically based on everything in your prompt so far.
+
+<Callout type="important" title="Not a Static Answer Database">
+An LLM does <strong>not</strong> search a table of pre-saved answers when you ask a question. Every response is generated freshly, token by token, from learned neural network weights shaped during training. That is why it can write new combinations—and also why it can invent plausible-sounding falsehoods.
+</Callout>
+
+## 4. Visual Explanation
+
+The diagram below shows the core flow inside a modern generative LLM: turning input text into numbered **tokens**, weighing relationships across context via **attention** inside **Transformer** blocks, scoring candidate next tokens, and appending the chosen token for the next step.
+
+<figure class="vl-diagram-card">
+  <svg
+    viewBox="0 0 760 320"
+    role="img"
+    aria-labelledby="llm-diagram-title llm-diagram-desc"
+    class="vl-diagram-svg"
+  >
+    <title id="llm-diagram-title">How a Large Language Model Predicts the Next Token</title>
+    <desc id="llm-diagram-desc">
+      Flow from left to right: a prompt string is split into tokens, mapped to numeric embeddings, processed by Transformer attention layers connecting related tokens in context, and scored into probabilities to pick the next token and loop sequentially.
+    </desc>
+
+    <rect x="12" y="14" width="736" height="292" rx="14" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="1.5" />
+
+    {/* Stage 1: Prompt -> Tokens */}
+    <text x="110" y="42" textAnchor="middle" fontSize="13.5" fontWeight="700" fill="#0f172a">
+      1. Tokenization
+    </text>
+    <rect x="28" y="56" width="164" height="44" rx="8" fill="#ffffff" stroke="#94a3b8" strokeWidth="1.5" />
+    <text x="110" y="82" textAnchor="middle" fontSize="12" fontWeight="600" fill="#1e293b">
+      "Look both ..."
+    </text>
+
+    <path d="M110 104 V124" stroke="#2563eb" strokeWidth="2" />
+    <polygon points="105,122 115,122 110,130" fill="#2563eb" />
+
+    {/* Token chips */}
+    <rect x="34" y="136" width="66" height="32" rx="6" fill="#dbeafe" stroke="#3b82f6" strokeWidth="1.2" />
+    <text x="67" y="156" textAnchor="middle" fontSize="12" fontFamily="monospace" fill="#1e3a8a">Look</text>
+    <rect x="108" y="136" width="68" height="32" rx="6" fill="#dbeafe" stroke="#3b82f6" strokeWidth="1.2" />
+    <text x="142" y="156" textAnchor="middle" fontSize="12" fontFamily="monospace" fill="#1e3a8a">both</text>
+
+    <text x="110" y="192" textAnchor="middle" fontSize="11" fill="#475569">
+      Split text into token IDs
+    </text>
+    <rect x="34" y="204" width="152" height="36" rx="6" fill="#eff6ff" stroke="#bfdbfe" strokeWidth="1" />
+    <text x="110" y="226" textAnchor="middle" fontSize="11.5" fontFamily="monospace" fill="#1d4ed8">
+      [7920, 2225] → vectors
+    </text>
+
+    {/* Arrow 1 -> 2 */}
+    <path d="M200 154 H238" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" />
+    <polygon points="238,148 250,154 238,160" fill="#2563eb" />
+
+    {/* Stage 2: Transformer & Attention */}
+    <text x="366" y="42" textAnchor="middle" fontSize="13.5" fontWeight="700" fill="#0f172a">
+      2. Context &amp; Attention (Transformer)
+    </text>
+    <rect x="256" y="56" width="220" height="202" rx="12" fill="#ffffff" stroke="#818cf8" strokeWidth="1.8" />
+    <text x="366" y="80" textAnchor="middle" fontSize="12" fontWeight="700" fill="#3730a3">
+      Self-Attention Layers
+    </text>
+
+    {/* Context words with attention arcs */}
+    <rect x="274" y="100" width="54" height="28" rx="6" fill="#eef2ff" stroke="#6366f1" strokeWidth="1.2" />
+    <text x="301" y="118" textAnchor="middle" fontSize="11.5" fill="#312e81">street</text>
+
+    <rect x="338" y="100" width="52" height="28" rx="6" fill="#eef2ff" stroke="#6366f1" strokeWidth="1.2" />
+    <text x="364" y="118" textAnchor="middle" fontSize="11.5" fill="#312e81">Look</text>
+
+    <rect x="400" y="100" width="56" height="28" rx="6" fill="#eef2ff" stroke="#6366f1" strokeWidth="1.2" />
+    <text x="428" y="118" textAnchor="middle" fontSize="11.5" fontWeight="700" fill="#312e81">both</text>
+
+    {/* Attention connection curves */}
+    <path d="M301 128 Q364 182 428 128" fill="none" stroke="#4f46e5" strokeWidth="2.5" />
+    <path d="M364 128 Q396 164 428 128" fill="none" stroke="#818cf8" strokeWidth="2" />
+
+    <text x="366" y="186" textAnchor="middle" fontSize="11.5" fill="#334155">
+      Each token weighs which earlier
+    </text>
+    <text x="366" y="203" textAnchor="middle" fontSize="11.5" fill="#334155">
+      tokens matter most right now.
+    </text>
+    <rect x="274" y="218" width="184" height="28" rx="6" fill="#f5f3ff" stroke="#ddd6fe" strokeWidth="1" />
+    <text x="366" y="236" textAnchor="middle" fontSize="11" fontWeight="600" fill="#5b21b6">
+      Context window tracks recent history
+    </text>
+
+    {/* Arrow 2 -> 3 */}
+    <path d="M484 154 H520" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" />
+    <polygon points="520,148 532,154 520,160" fill="#2563eb" />
+
+    {/* Stage 3: Next-Token Prediction & Loop */}
+    <text x="634" y="42" textAnchor="middle" fontSize="13.5" fontWeight="700" fill="#0f172a">
+      3. Next-Token Prediction
+    </text>
+    <rect x="538" y="56" width="192" height="162" rx="12" fill="#ffffff" stroke="#14b8a6" strokeWidth="1.8" />
+    <text x="634" y="79" textAnchor="middle" fontSize="12" fontWeight="700" fill="#0f766e">
+      Candidate Probabilities
+    </text>
+
+    {/* Probability bars */}
+    <text x="552" y="106" fontSize="11.5" fontFamily="monospace" fill="#0f172a">ways</text>
+    <rect x="606" y="95" width="96" height="14" rx="4" fill="#0d9488" />
+    <text x="708" y="106" fontSize="11" fontWeight="700" fill="#0f766e">High</text>
+
+    <text x="552" y="134" fontSize="11.5" fontFamily="monospace" fill="#334155">sides</text>
+    <rect x="606" y="123" width="44" height="14" rx="4" fill="#5eead4" />
+
+    <text x="552" y="162" fontSize="11.5" fontFamily="monospace" fill="#64748b">cars</text>
+    <rect x="606" y="151" width="18" height="14" rx="4" fill="#cbd5e1" />
+
+    <rect x="554" y="180" width="160" height="26" rx="6" fill="#ecfeff" stroke="#5eead4" strokeWidth="1" />
+    <text x="634" y="197" textAnchor="middle" fontSize="11.5" fontWeight="700" fill="#0f766e">
+      Chosen token → "ways"
+    </text>
+
+    {/* Loop back note */}
+    <path d="M634 222 V274 H110 V248" fill="none" stroke="#0284c7" strokeWidth="2" strokeDasharray="5 4" />
+    <polygon points="105,252 115,252 110,242" fill="#0284c7" />
+    <text x="382" y="290" textAnchor="middle" fontSize="11.5" fontWeight="600" fill="#0369a1">
+      Append "ways" to the prompt and repeat step-by-step until done
+    </text>
+  </svg>
+  <DiagramCaption
+    label="Figure 1"
+    caption="An LLM converts text into numbered tokens, uses Transformer attention layers to connect relevant words across the context window, scores likely next tokens, and repeats one token at a time."
+  />
+</figure>
+
+## 5. Step-by-Step Walkthrough
+
+<StepWalkthrough
+  heading="How an LLM Generates a Reply"
+  steps={[
+    {
+      title: '1. Break text into tokens',
+      detail:
+        'A tokenizer splits your prompt into common words, word pieces, or punctuation symbols called tokens. For example, an uncommon word like "tokenization" may split into smaller subword pieces such as "token" + "ization". Each token is mapped to an integer ID and a vector of numbers.'
+    },
+    {
+      title: '2. Read the prompt within the context window',
+      detail:
+        'Every model can hold only a bounded amount of recent text at once—called its context window (measured in tokens). Both your prompt and the reply generated so far sit inside this working memory.'
+    },
+    {
+      title: '3. Connect related ideas with attention',
+      detail:
+        'Inside a Transformer architecture, self-attention layers let each token weigh how strongly it relates to earlier tokens. In "The trophy did not fit in the suitcase because it was too big," attention helps link "it" to "trophy" using surrounding clues.'
+    },
+    {
+      title: '4. Score probabilities for the next token',
+      detail:
+        'After passing through many Transformer layers, the model outputs probability scores across its vocabulary of possible next tokens—much like a weighted list of plausible continuations.'
+    },
+    {
+      title: '5. Generate sequentially and stop',
+      detail:
+        'The system selects one next token, appends it to the end of the text, and runs the cycle again to predict the token after that. Multi-paragraph answers emerge word-piece by word-piece until the model predicts a special stop token.'
+    }
+  ]}
+/>
+
+## 6. Interactive Demonstration
+
+This lesson uses a structured diagram rather than a live text-generation sandbox because real LLMs require large cloud or local model weights and a backend or heavy WebGPU download, which goes against VisionLab's fast static architecture. Rather than building a misleading mock "chatbot" with canned responses, the visual breakdown above focuses cleanly on the true underlying mechanism: **tokens → attention → next-token probability → sequential loop**.
+
+If you want to manipulate how a small neural network turns input numbers into output class probabilities directly in your browser, explore the simulator in <a href={getLessonHref('deep-learning/understanding-neural-networks')}>Understanding Neural Networks</a>.
+
+## 7. Real-World Example
+
+Consider a developer or student using an AI coding assistant to summarize a bug report and suggest possible causes:
+
+- When you paste an error message and ask, *"Why might this happen?"*, the LLM tokenizes your error text and question.
+- Attention layers notice links between keywords such as `undefined`, line numbers, and the function name mentioned earlier in the prompt.
+- By predicting helpful explanations token by token—and after extra alignment tuning (such as instruction tuning and human feedback) so it answers questions rather than merely continuing raw text—it drafts a clear debugging checklist.
+
+However, if you ask about a private internal function you never pasted into the prompt, the model may still guess a plausible-sounding signature based on common open-source libraries.
+
+## 8. Common Misconceptions
+
+- **Misconception: "An LLM looks up verified facts in a database before replying."**  
+  **Reality:** A standalone LLM generates text from patterns encoded in its weights. Unless connected to an external search or retrieval tool, it does not verify statements against a live database—which is why it can produce **hallucinations** (fluent, confident text that is factually wrong or cites non-existent sources).
+- **Misconception: "Tokens are always single words or single letters."**  
+  **Reality:** Most modern LLMs use subword tokenization. Common short words like `"the"` are single tokens, while long or rare words, numbers, and code symbols split into multiple subword chunks.
+- **Misconception: "If an LLM explains something calmly and clearly, it must understand it with human awareness."**  
+  **Reality:** Fluency reflects strong statistical modeling of human writing patterns, not human consciousness or guaranteed truth. High-stakes facts, math, legal claims, and citations should always be checked against primary sources.
+
+## 9. Knowledge Check
+
+<KnowledgeCheck
+  client:visible
+  lessonId="generative-ai/understanding-large-language-models"
+  questions={[
+    {
+      question: "What is the fundamental task an LLM learns to perform at each generation step?",
+      options: [
+        "Looking up the user's exact question in a hidden SQL table",
+        "Predicting the next likely token based on the preceding tokens in context",
+        "Compiling English sentences into C++ machine code",
+        "Searching the live internet for every single word"
+      ],
+      correctIndex: 1,
+      explanation: "At each step, an LLM computes probability scores over its vocabulary to predict the next token given the prompt and the tokens generated so far."
+    },
+    {
+      question: "What is a token in a Large Language Model?",
+      options: [
+        "A physical GPU chip inside a data center",
+        "A common word, subword piece, or punctuation unit used as the model's basic text chunk",
+        "A password required to open a website",
+        "An entire 10-page document"
+      ],
+      correctIndex: 1,
+      explanation: "Tokenizers split raw text into subword units (tokens)—whole short words, fragments of longer words, or symbols—so the model can represent text numerically."
+    },
+    {
+      question: "What role does the attention mechanism play in a Transformer?",
+      options: [
+        "It prevents the user from closing the browser tab",
+        "It helps each token weigh and connect relevant earlier tokens across the context window",
+        "It deletes punctuation marks before training",
+        "It guarantees the output contains zero factual mistakes"
+      ],
+      correctIndex: 1,
+      explanation: "Self-attention lets the model measure which earlier tokens in the context are most relevant to interpreting and continuing the current text—for example, resolving pronouns or distant clues."
+    },
+    {
+      question: "Why can an LLM hallucinate—stating something false in a completely confident tone?",
+      options: [
+        "Because its training database accidentally stored fake encyclopedias on purpose",
+        "Because it generates statistically plausible next tokens from learned patterns rather than querying a verified truth table",
+        "Because tokenization removes all nouns",
+        "Because attention only works on numbers, not words"
+      ],
+      correctIndex: 1,
+      explanation: "Because generation optimizes for coherent, plausible continuations given learned language patterns rather than checking verified truth, an LLM can smoothly invent details when uncertain."
+    }
+  ]}
+/>
+
+## 10. Key Takeaways
+
+- **Large Language Models (LLMs)** generate text sequentially by **predicting one token at a time** from learned neural weights—not by retrieving canned answers from a static database.
+- Text is split into subword units called **tokens** and processed inside a bounded **context window**.
+- **Transformer attention** lets the model connect related words and ideas across the prompt to shape what comes next.
+- Fluency is not proof of truth: **hallucinations** happen, so important facts, numbers, and citations require human verification.
+
+## 11. Related Lessons & Track
+
+- Explore the <a href={getTrackHref('generative-ai')}>Generative AI &amp; Large Language Models track</a>.
+- Build intuition for how multi-layer weights turn inputs into probability scores in <a href={getLessonHref('deep-learning/understanding-neural-networks')}>Understanding Neural Networks</a>.
+- Revisit the big picture of AI systems in <a href={getLessonHref('ai-fundamentals/what-is-artificial-intelligence')}>What Is Artificial Intelligence?</a>.
+
+<Callout type="tip" title="References for Further Reading">
+  <ul>
+    <li>Vaswani, A. et al. (2017). <em>Attention Is All You Need</em> (introduces the Transformer architecture).</li>
+    <li>Jurafsky, D., &amp; Martin, J. H. <em>Speech and Language Processing</em> (chapters on tokenization, language modeling, and Transformers).</li>
+    <li>Bender, E. M., Gebru, T., McMillan-Major, A., &amp; Shmitchell, S. (2021). <em>On the Dangers of Stochastic Parrots</em> (background on statistical generation and factual limitations).</li>
+  </ul>
+</Callout>

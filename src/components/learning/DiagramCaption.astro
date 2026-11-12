@@ -1,0 +1,52 @@
+---
+interface Props {
+  caption: string;
+  label?: string;
+}
+
+const { caption, label } = Astro.props;
+---
+
+<figure class="diagram-figure">
+  <div class="diagram-figure__frame">
+    <slot />
+  </div>
+  <figcaption class="diagram-figure__caption">
+    {label && <strong class="diagram-figure__label">{label}: </strong>}
+    <span>{caption}</span>
+  </figcaption>
+</figure>
+
+<style>
+  .diagram-figure {
+    margin: var(--space-6) 0;
+    padding: var(--space-4);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xs);
+  }
+
+  .diagram-figure__frame {
+    overflow-x: auto;
+  }
+
+  .diagram-figure__frame :global(svg) {
+    width: 100%;
+    height: auto;
+    margin-inline: auto;
+  }
+
+  .diagram-figure__caption {
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-border);
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    line-height: 1.55;
+  }
+
+  .diagram-figure__label {
+    color: var(--color-text);
+  }
+</style>

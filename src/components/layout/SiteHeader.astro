@@ -1,12 +1,28 @@
 ---
 import { withBase } from '../../utils/url';
-import StatusBadge from '../ui/StatusBadge.astro';
 
 const homeHref = withBase('/');
-const overviewHref = withBase('/#overview');
-const roadmapHref = withBase('/#roadmap');
-const featuredHref = withBase('/#featured');
-const plannedHref = withBase('/#planned-sections');
+const roadmapHref = withBase('/roadmap/');
+const exploreHref = withBase('/explore/');
+const myLearningHref = withBase('/my-learning/');
+
+const currentPath = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const normalize = (href: string) => href.replace(/\/+$/, '') || '/';
+
+const navItems = [
+  { label: 'Home', href: homeHref, matchPrefix: false },
+  { label: 'Roadmap', href: roadmapHref, matchPrefix: true },
+  { label: 'Explore Lessons', href: exploreHref, matchPrefix: true },
+  { label: 'My Learning', href: myLearningHref, matchPrefix: true },
+] as const;
+
+const isActive = (item: (typeof navItems)[number]) => {
+  const target = normalize(item.href);
+  if (!item.matchPrefix) {
+    return currentPath === target;
+  }
+  return currentPath === target || currentPath.startsWith(`${target}/`);
+};
 ---
 
 <header class="site-header">
@@ -43,21 +59,20 @@ const plannedHref = withBase('/#planned-sections');
         aria-label="Primary navigation"
       >
         <ul class="site-nav__list">
-          <li>
-            <a href={overviewHref} class="site-nav__link">Overview</a>
-          </li>
-          <li>
-            <a href={roadmapHref} class="site-nav__link">Roadmap</a>
-          </li>
-          <li>
-            <a href={featuredHref} class="site-nav__link">How It Works</a>
-          </li>
-          <li>
-            <a href={plannedHref} class="site-nav__link">
-              <span>Lessons &amp; Demos</span>
-              <StatusBadge variant="amber">Soon</StatusBadge>
-            </a>
-          </li>
+          {navItems.map((item) => {
+            const active = isActive(item);
+            return (
+              <li>
+                <a
+                  href={item.href}
+                  class={`site-nav__link ${active ? 'site-nav__link--active' : ''}`}
+                  aria-current={active ? 'page' : undefined}
+                >
+                  {item.label}
+                </a>
+              </li>
+            );
+          })}
         </ul>
       </nav>
 
@@ -307,6 +322,11 @@ const plannedHref = withBase('/#planned-sections');
     color: var(--color-text);
   }
 
+  .site-nav__link--active {
+    background-color: var(--color-accent-soft);
+    color: var(--color-accent);
+  }
+
   .icon-btn {
     display: inline-flex;
     align-items: center;
@@ -375,7 +395,7 @@ const plannedHref = withBase('/#planned-sections');
 
     .site-nav__link {
       width: auto;
-      padding: 0.45rem 0.7rem;
+      padding: 0.45rem 0.75rem;
     }
   }
 </style>

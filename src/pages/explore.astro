@@ -1,0 +1,64 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import LessonExplorer from '../components/learning/LessonExplorer';
+import StatusBadge from '../components/ui/StatusBadge.astro';
+import { getPublishedLessons, toLessonSummary } from '../utils/lessons';
+import { LEARNING_TRACKS } from '../utils/tracks';
+
+const publishedSummaries = (await getPublishedLessons()).map(toLessonSummary);
+---
+
+<MainLayout
+  title="Explore Lessons — VisionLab"
+  description="Search and filter all published VisionLab lessons by topic, track, difficulty, or tag."
+>
+  <section class="section">
+    <div class="container">
+      <header class="explore-hero">
+        <div class="explore-hero__badges">
+          <StatusBadge variant="accent">Explore Freely</StatusBadge>
+          <StatusBadge variant="teal">
+            {publishedSummaries.length} lessons available
+          </StatusBadge>
+        </div>
+        <h1 class="explore-hero__title">Explore Knowledge Library</h1>
+        <p class="explore-hero__intro">
+          Search across lesson titles, descriptions, and tags, or filter by
+          learning track and difficulty. Every lesson is self-contained and
+          requires no backend account.
+        </p>
+      </header>
+
+      <LessonExplorer
+        client:load
+        lessons={publishedSummaries}
+        tracks={LEARNING_TRACKS}
+      />
+    </div>
+  </section>
+</MainLayout>
+
+<style>
+  .explore-hero {
+    max-width: 46rem;
+    margin-bottom: var(--space-6);
+  }
+
+  .explore-hero__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+
+  .explore-hero__title {
+    font-size: clamp(1.9rem, 3.5vw, 2.55rem);
+    font-weight: 800;
+    margin-bottom: var(--space-3);
+  }
+
+  .explore-hero__intro {
+    font-size: 1.05rem;
+    line-height: 1.7;
+  }
+</style>

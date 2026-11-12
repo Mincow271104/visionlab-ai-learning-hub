@@ -1,0 +1,290 @@
+---
+title: "How Computers See Images"
+description: "Learn how digital cameras and computers turn light into pixel grids, color channels, numerical arrays, and visual features."
+track: "computer-vision"
+difficulty: "beginner"
+estimatedMinutes: 14
+order: 1
+tags:
+  - computer-vision
+  - pixels
+  - rgb
+  - convolution
+  - cnn
+status: "published"
+---
+import Callout from '../../../components/learning/Callout.astro';
+import DiagramCaption from '../../../components/learning/DiagramCaption.astro';
+import StepWalkthrough from '../../../components/learning/StepWalkthrough.astro';
+import KnowledgeCheck from '../../../components/learning/KnowledgeCheck';
+import { getLessonHref, getTrackHref } from '../../../utils/lessons';
+
+## 1. Introduction
+
+When you glance at a photo of a street corner, you immediately recognize cars, traffic lights, trees, and shadows. A computer does not see a scene with eyes or life experience. To a computer, every digital image is simply a large grid of numbers representing brightness and color.
+
+Understanding how light becomes numbers is the foundation of **computer vision**, the field of AI focused on helping machines interpret visual information from images and videos. Once you understand how an image is represented numerically, it becomes much easier to see how algorithms detect edges, shapes, and objects.
+
+## 2. Learning Objectives
+
+By the end of this lesson, you will be able to:
+
+- Explain what a **pixel** is and how image width, height, and color channels determine the size of an image grid.
+- Read how **RGB** values from `0` to `255` combine to represent colors in a numerical array.
+- Describe why computers inspect small local patches (the intuition behind **convolution**) to detect simple features like edges before recognizing complex objects.
+
+## 3. Intuitive Explanation
+
+Imagine recreating a photograph using thousands of tiny square tiles on a mosaic wall. From a few steps back, your brain blends those colored tiles together into faces, skies, and buildings. Up close, though, each tile holds only one solid color.
+
+Digital images work in much the same way:
+
+- Each tiny square tile is called a **pixel** (short for *picture element*).
+- For a grayscale (black-and-white) photo, each tile needs just **one number** to show how dark or bright it is—for example, `0` for black, `255` for white, and numbers in between for shades of gray.
+- For a standard color photo, each pixel uses **three numbers** stacked together: one for **Red**, one for **Green**, and one for **Blue** (**RGB**).
+
+Because computers are built to calculate with numbers, storing an image as a grid (or **array** / **tensor**) lets software measure patterns mathematically rather than guessing visually.
+
+<Callout type="note" title="Pixels Have No Labels Attached">
+An image file does not carry invisible tags saying "this region is a cat" or "this pixel is sky." A computer vision model receives raw numbers and must infer patterns from how neighboring pixel values change across the grid.
+</Callout>
+
+## 4. Visual Explanation
+
+The diagram below traces how a small visual scene is stored as three separate Red, Green, and Blue number grids (`0`–`255`) and how sliding a small filter window highlights a vertical edge where dark pixels meet bright pixels.
+
+<figure class="vl-diagram-card">
+  <svg
+    viewBox="0 0 760 300"
+    role="img"
+    aria-labelledby="cv-pixels-diagram-title cv-pixels-diagram-desc"
+    class="vl-diagram-svg"
+  >
+    <title id="cv-pixels-diagram-title">How a Color Image Becomes Numerical Grids and Edge Features</title>
+    <desc id="cv-pixels-diagram-desc">
+      Left: a stylized photo grid zooms into one pixel. Middle: three stacked RGB number channels ranging from 0 to 255. Right: a small 3x3 sliding filter window detecting a dark-to-bright vertical edge.
+    </desc>
+
+    <rect x="12" y="14" width="736" height="272" rx="14" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="1.5" />
+
+    {/* Panel 1: Image to Pixel Grid */}
+    <text x="120" y="42" textAnchor="middle" fontSize="14" fontWeight="700" fill="#0f172a">
+      1. Digital Image Grid
+    </text>
+    <rect x="44" y="58" width="152" height="152" rx="10" fill="#e0f2fe" stroke="#0284c7" strokeWidth="1.5" />
+    {/* Stylized sky, sun, hill */}
+    <rect x="46" y="60" width="148" height="84" rx="8" fill="#bae6fd" />
+    <circle cx="156" cy="92" r="18" fill="#fbbf24" />
+    <path d="M46 155 Q110 112 194 150 L194 208 L46 208 Z" fill="#16a34a" />
+    {/* Subtle grid lines */}
+    <path d="M82 58 V210 M120 58 V210 M158 58 V210 M44 96 H196 M44 134 H196 M44 172 H196" stroke="#0f172a" strokeOpacity="0.16" strokeWidth="1" />
+    {/* Highlighted pixel */}
+    <rect x="120" y="96" width="38" height="38" fill="none" stroke="#dc2626" strokeWidth="2.5" />
+    <text x="120" y="232" textAnchor="middle" fontSize="12" fill="#334155">
+      Height x Width grid of pixels
+    </text>
+    <text x="120" y="250" textAnchor="middle" fontSize="11.5" fontWeight="600" fill="#b91c1c">
+      1 highlighted pixel = (R, G, B)
+    </text>
+
+    {/* Arrow 1 -> 2 */}
+    <path d="M206 134 H248" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" />
+    <polygon points="248,128 260,134 248,140" fill="#2563eb" />
+
+    {/* Panel 2: RGB Channels */}
+    <text x="380" y="42" textAnchor="middle" fontSize="14" fontWeight="700" fill="#0f172a">
+      2. Three RGB Number Channels (0–255)
+    </text>
+
+    {/* Red channel */}
+    <rect x="272" y="64" width="96" height="96" rx="8" fill="#fee2e2" stroke="#dc2626" strokeWidth="1.5" />
+    <text x="320" y="84" textAnchor="middle" fontSize="12" fontWeight="700" fill="#991b1b">Red (R)</text>
+    <text x="320" y="108" textAnchor="middle" fontSize="11.5" fontFamily="monospace" fill="#7f1d1d">245  250  180</text>
+    <text x="320" y="128" textAnchor="middle" fontSize="11.5" fontFamily="monospace" fill="#7f1d1d">240  252  120</text>
+    <text x="320" y="148" textAnchor="middle" fontSize="11.5" fontFamily="monospace" fill="#7f1d1d"> 34   42   50</text>
+
+    {/* Green channel */}
+    <rect x="332" y="104" width="96" height="96" rx="8" fill="#dcfce7" stroke="#16a34a" strokeWidth="1.5" />
+    <text x="380" y="124" textAnchor="middle" fontSize="12" fontWeight="700" fill="#166534">Green (G)</text>
+    <text x="380" y="148" textAnchor="middle" fontSize="11.5" fontFamily="monospace" fill="#14532d">205  210  220</text>
+    <text x="380" y="168" textAnchor="middle" fontSize="11.5" fontFamily="monospace" fill="#14532d">198  214  190</text>
+    <text x="380" y="188" textAnchor="middle" fontSize="11.5" fontFamily="monospace" fill="#14532d">162  175  168</text>
+
+    {/* Blue channel */}
+    <rect x="392" y="144" width="96" height="96" rx="8" fill="#dbeafe" stroke="#2563eb" strokeWidth="1.5" />
+    <text x="440" y="164" textAnchor="middle" fontSize="12" fontWeight="700" fill="#1e40af">Blue (B)</text>
+    <text x="440" y="188" textAnchor="middle" fontSize="11.5" fontFamily="monospace" fill="#1e3a8a"> 40   55  242</text>
+    <text x="440" y="208" textAnchor="middle" fontSize="11.5" fontFamily="monospace" fill="#1e3a8a"> 35   48  246</text>
+    <text x="440" y="228" textAnchor="middle" fontSize="11.5" fontFamily="monospace" fill="#1e3a8a"> 72   68   74</text>
+
+    <text x="380" y="266" textAnchor="middle" fontSize="11.5" fill="#334155">
+      Shape: Height x Width x 3 tensor
+    </text>
+
+    {/* Arrow 2 -> 3 */}
+    <path d="M498 156 H538" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" />
+    <polygon points="538,150 550,156 538,162" fill="#2563eb" />
+
+    {/* Panel 3: Convolution Filter & Feature Extraction */}
+    <text x="642" y="42" textAnchor="middle" fontSize="14" fontWeight="700" fill="#0f172a">
+      3. Local Filter (Convolution)
+    </text>
+    <rect x="562" y="64" width="160" height="122" rx="10" fill="#ffffff" stroke="#94a3b8" strokeWidth="1.5" />
+    {/* Brightness patch */}
+    <rect x="578" y="80" width="36" height="36" fill="#1e293b" />
+    <rect x="614" y="80" width="36" height="36" fill="#334155" />
+    <rect x="650" y="80" width="36" height="36" fill="#f1f5f9" />
+    <rect x="578" y="116" width="36" height="36" fill="#1e293b" />
+    <rect x="614" y="116" width="36" height="36" fill="#334155" />
+    <rect x="650" y="116" width="36" height="36" fill="#f8fafc" />
+    {/* Sliding window box */}
+    <rect x="612" y="78" width="76" height="76" fill="none" stroke="#2563eb" strokeWidth="2.5" strokeDasharray="5 3" rx="4" />
+    <text x="642" y="172" textAnchor="middle" fontSize="11.5" fontWeight="600" fill="#1d4ed8">
+      Sliding 3x3 patch spots sharp contrast
+    </text>
+
+    <rect x="562" y="200" width="160" height="58" rx="8" fill="#eff6ff" stroke="#93c5fd" strokeWidth="1.2" />
+    <text x="642" y="223" textAnchor="middle" fontSize="12" fontWeight="700" fill="#1e3a8a">
+      Output: Feature Map
+    </text>
+    <text x="642" y="243" textAnchor="middle" fontSize="11.5" fill="#334155">
+      Edges → Textures → Object parts
+    </text>
+  </svg>
+  <DiagramCaption
+    label="Figure 1"
+    caption="Computers store a color photo as a 3D numerical array (height × width × 3 RGB channels). Small sliding filters compare nearby pixel numbers to highlight edges and patterns."
+  />
+</figure>
+
+## 5. Step-by-Step Walkthrough
+
+<StepWalkthrough
+  heading="From Light to Visual Features"
+  steps={[
+    {
+      title: '1. Capture light into a pixel grid',
+      detail:
+        'A camera sensor divides the scene into rows and columns of tiny light-sensitive cells. A 1920 × 1080 image contains over two million pixels arranged in 1,080 rows and 1,920 columns.'
+    },
+    {
+      title: '2. Encode intensity and color channels',
+      detail:
+        'In standard 8-bit RGB images, each pixel stores three integers between 0 and 255 for Red, Green, and Blue. For instance, (255, 255, 255) appears white, (0, 0, 0) appears black, and (255, 0, 0) appears pure red.'
+    },
+    {
+      title: '3. Represent the image as an array or tensor',
+      detail:
+        'Software arranges these numbers into a multi-dimensional grid called an array or tensor with shape (height, width, channels). Resizing, brightening, or cropping an image simply transforms those numbers.'
+    },
+    {
+      title: '4. Scan neighborhoods with convolution filters',
+      detail:
+        'Instead of inspecting one isolated pixel at a time, image algorithms slide a small grid of weights—called a kernel or filter—across small neighborhoods. Multiplying and summing nearby values highlights where brightness suddenly changes, revealing edges and corners.'
+    },
+    {
+      title: '5. Build layered visual hierarchies in CNNs',
+      detail:
+        'A Convolutional Neural Network (CNN) stacks many learned filters in layers. Early layers tend to respond to simple edges and color contrasts, middle layers combine them into textures or parts like wheels or eyes, and deeper layers help classify whole scenes.'
+    }
+  ]}
+/>
+
+## 6. Interactive Demonstration
+
+For this topic, an annotated static diagram is currently clearer than a heavy interactive widget because the primary goal is building mental clarity around two linked ideas: how a single picture translates into `height × width × 3` numbers, and why comparing *neighboring* pixels reveals edges. A dedicated interactive **Convolution Demo** widget is planned for a future package so you will eventually be able to edit pixel grids and filter weights live in the browser.
+
+If you want to explore right now how weighted inputs combine inside layered networks, check out the interactive simulator in <a href={getLessonHref('deep-learning/understanding-neural-networks')}>Understanding Neural Networks</a>.
+
+## 7. Real-World Example
+
+Think about **medical X-ray screening support** or **automated quality inspection on a factory line**:
+
+- On a circuit-board factory line, an overhead camera captures high-resolution images of soldered components every second.
+- Each frame arrives as an RGB pixel array. Simple image preprocessing first normalizes brightness so factory lighting changes do not confuse the system.
+- Learned convolutional filters scan small patches around each solder joint to spot missing pins, misaligned edges, or unexpected blobs compared to normal patterns, flagging suspect boards for human review.
+
+Because the model operates directly on pixel grids, lighting glare, blurry focus, or rotated parts can change the underlying numbers dramatically—which is why computer vision pipelines rely on careful calibration and diverse training examples.
+
+## 8. Common Misconceptions
+
+- **Misconception: "Computers see whole objects the way human eyes do, then read pixels only when zooming in."**  
+  **Reality:** Computers *always* start from raw numbers in a pixel array. Any recognition of faces, cars, or text is computed mathematically from patterns in those numbers.
+- **Misconception: "Each pixel number directly encodes what object it belongs to."**  
+  **Reality:** A pixel value such as `(180, 120, 90)` only describes color/brightness at one tiny point. Context comes from patterns across neighborhoods of pixels.
+- **Misconception: "Higher image resolution always makes a computer vision model better."**  
+  **Reality:** Higher resolution gives finer detail, which helps for tiny defects or distant text, but also increases computation and memory sharply. Many vision models resize images to balanced dimensions (such as `224 × 224` or `640 × 640`) depending on the task.
+
+## 9. Knowledge Check
+
+<KnowledgeCheck
+  client:visible
+  lessonId="computer-vision/how-computers-see-images"
+  questions={[
+    {
+      question: "How is a standard color RGB image stored so a computer can process it?",
+      options: [
+        "As a list of object names detected by the camera lens",
+        "As a 3D numerical grid with height, width, and three color channels (Red, Green, Blue)",
+        "As a single average brightness number for the entire picture",
+        "As text paragraphs describing shapes and colors"
+      ],
+      correctIndex: 1,
+      explanation: "A standard RGB digital image is stored as a grid of pixels (height × width), where each pixel holds three numeric channel values—Red, Green, and Blue—typically ranging from 0 to 255 in 8-bit images."
+    },
+    {
+      question: "In an 8-bit grayscale image where 0 is black and 255 is white, what does a sudden jump from 20 to 235 between neighboring pixels usually indicate?",
+      options: [
+        "A missing file header",
+        "An edge or sharp contrast boundary in the scene",
+        "A corrupted color channel",
+        "That the image has already been classified"
+      ],
+      correctIndex: 1,
+      explanation: "Edges occur where brightness or color changes sharply between neighboring pixels. Convolution filters detect edges by measuring differences across small local pixel patches."
+    },
+    {
+      question: "Why do Convolutional Neural Networks (CNNs) inspect small local patches of pixels in early layers?",
+      options: [
+        "Because individual pixels only encode color, while edges, corners, and textures appear across nearby pixels",
+        "Because cameras only record 3×3 images",
+        "To delete the Blue channel automatically",
+        "To avoid needing any numeric weights"
+      ],
+      correctIndex: 0,
+      explanation: "Meaningful visual structures—like vertical lines, curves, and textures—emerge from relationships among neighboring pixels. Sliding small filters across local patches lets CNNs build simple features into complex parts."
+    },
+    {
+      question: "Which RGB triplet represents pure white in standard 8-bit color encoding?",
+      options: [
+        "(0, 0, 0)",
+        "(255, 0, 0)",
+        "(255, 255, 255)",
+        "(128, 128, 128)"
+      ],
+      correctIndex: 2,
+      explanation: "RGB is an additive color model: maximum intensity in Red, Green, and Blue—(255, 255, 255)—combines to form white, whereas (0, 0, 0) represents black."
+    }
+  ]}
+/>
+
+## 10. Key Takeaways
+
+- Every digital image is a grid of **pixels** represented numerically as an array or **tensor**.
+- Standard color images use three **RGB** channels (Red, Green, Blue), commonly scaled from `0` to `255` per channel.
+- Visual meaning comes from comparing **neighboring pixels**, not reading isolated pixels one by one.
+- **Convolution** slides small numerical filters across local patches to extract edges and textures, which **CNNs** layer together to recognize higher-level visual concepts.
+
+## 11. Related Lessons & Track
+
+- Explore the full <a href={getTrackHref('computer-vision')}>Computer Vision track</a>.
+- Continue next with <a href={getLessonHref('computer-vision/introduction-to-depth-estimation')}>Introduction to Depth Estimation</a> to see how vision models infer 3D distance from 2D pixel grids.
+- Review how layered networks learn weighted combinations in <a href={getLessonHref('deep-learning/understanding-neural-networks')}>Understanding Neural Networks</a>.
+
+<Callout type="tip" title="References for Further Reading">
+  <ul>
+    <li>Gonzalez, R. C., &amp; Woods, R. E. <em>Digital Image Processing</em> (foundational concepts of sampling, pixels, and spatial filtering).</li>
+    <li>LeCun, Y., Bottou, L., Bengio, Y., &amp; Haffner, P. (1998). <em>Gradient-Based Learning Applied to Document Recognition</em> (classic introduction to Convolutional Neural Networks).</li>
+    <li>Stanford CS231n Course Notes: <em>Image Classification &amp; Convolutional Neural Networks</em> (beginner-accessible visual explanations of pixel arrays and filters).</li>
+  </ul>
+</Callout>

@@ -1,0 +1,301 @@
+---
+title: "How Does Machine Learning Work?"
+description: "Understand data, features, and labels, compare supervised and unsupervised learning, and see why validation and testing protect against overfitting."
+track: "machine-learning"
+difficulty: "beginner"
+estimatedMinutes: 10
+order: 1
+tags:
+  - "machine-learning"
+  - "features-and-labels"
+  - "generalization"
+status: "published"
+---
+
+import Callout from '../../../components/learning/Callout.astro';
+import DiagramCaption from '../../../components/learning/DiagramCaption.astro';
+import KnowledgeCheck from '../../../components/learning/KnowledgeCheck';
+import StepWalkthrough from '../../../components/learning/StepWalkthrough.astro';
+import { getLessonHref, getTrackHref } from '../../../utils/lessons';
+
+## 1. Introduction
+
+Saying "a computer learns from data" sounds mysterious until you see what happens inside a typical machine learning workflow. Machine learning is not magic—it is a structured cycle of measuring inputs, comparing guesses against known answers, and testing whether patterns hold up on brand-new examples.
+
+Understanding this workflow helps you spot why good data matters so much and why high accuracy on practice data does not automatically mean a model works in the real world.
+
+## 2. Learning Objectives
+
+By the end of this lesson, you will be able to:
+
+- Define **features**, **labels**, and **training data** using everyday examples.
+- Contrast **supervised learning** (learning with answer keys) with **unsupervised learning** (finding structure without labels).
+- Explain why datasets are split into **training**, **validation**, and **test** sets.
+- Distinguish **overfitting** (memorizing practice details) from **generalization** (handling unseen inputs).
+
+## 3. Intuitive Explanation
+
+Think about preparing for a biology exam using practice flashcards.
+
+Each flashcard shows measurable clues on the front—like leaf shape, color, and length. In machine learning, those clues are called **features**. The answer written on the back—such as *"oak leaf"* or *"maple leaf"*—is the **label**.
+
+If you memorize tiny ink smudges on your practice cards instead of noticing the actual leaf shapes, you will score 100% on the practice deck—and fail when the exam prints clean new photos. That failure to transfer from practice to new examples is **overfitting**. Learning the underlying leaf traits so you handle unseen examples is **generalization**.
+
+## 4. Visual Explanation
+
+A reliable machine learning workflow separates practice from final grading using three dataset splits: **training**, **validation**, and **testing**.
+
+<DiagramCaption
+  label="Figure 1"
+  caption="A standard supervised learning workflow splits collected data into training, validation, and held-out test subsets before deploying a model."
+>
+  <svg
+    viewBox="0 0 660 270"
+    role="img"
+    aria-labelledby="ml-flow-title ml-flow-desc"
+  >
+    <title id="ml-flow-title">
+      Machine learning training, validation, and testing workflow
+    </title>
+    <desc id="ml-flow-desc">
+      Flowchart showing a dataset split into Training Data, Validation Data, and Test Data; Training fits the model, Validation tunes choices, and Test checks generalization on unseen examples.
+    </desc>
+
+    <rect
+      x="16"
+      y="84"
+      width="136"
+      height="96"
+      rx="14"
+      fill="var(--color-surface)"
+      stroke="var(--color-border-strong)"
+      strokeWidth="1.6"
+    />
+    <text x="84" y="118" textAnchor="middle" fontSize="13.5" fontWeight="700" fill="var(--color-text)">
+      Labeled Dataset
+    </text>
+    <text x="84" y="140" textAnchor="middle" fontSize="11.5" fill="var(--color-text-secondary)">
+      Features + Labels
+    </text>
+    <text x="84" y="158" textAnchor="middle" fontSize="11" fill="var(--color-text-muted)">
+      Split before training
+    </text>
+
+    {/* Branches */}
+    <path d="M152 108 H198" stroke="var(--color-accent)" strokeWidth="2" />
+    <path d="M152 132 H198" stroke="var(--color-accent)" strokeWidth="2" />
+    <path d="M152 156 H198" stroke="var(--color-teal)" strokeWidth="2" />
+
+    <rect
+      x="202"
+      y="24"
+      width="176"
+      height="66"
+      rx="12"
+      fill="var(--color-accent-soft)"
+      stroke="var(--color-accent)"
+      strokeWidth="1.6"
+    />
+    <text x="290" y="50" textAnchor="middle" fontSize="13" fontWeight="700" fill="var(--color-accent)">
+      1. Training Set
+    </text>
+    <text x="290" y="70" textAnchor="middle" fontSize="11.5" fill="var(--color-text-secondary)">
+      Adjusts model parameters
+    </text>
+
+    <rect
+      x="202"
+      y="102"
+      width="176"
+      height="66"
+      rx="12"
+      fill="var(--color-surface)"
+      stroke="var(--color-accent-border)"
+      strokeWidth="1.6"
+    />
+    <text x="290" y="128" textAnchor="middle" fontSize="13" fontWeight="700" fill="var(--color-text)">
+      2. Validation Set
+    </text>
+    <text x="290" y="148" textAnchor="middle" fontSize="11.5" fill="var(--color-text-secondary)">
+      Compares &amp; tunes settings
+    </text>
+
+    <rect
+      x="202"
+      y="180"
+      width="176"
+      height="66"
+      rx="12"
+      fill="var(--color-teal-soft)"
+      stroke="var(--color-teal)"
+      strokeWidth="1.6"
+    />
+    <text x="290" y="206" textAnchor="middle" fontSize="13" fontWeight="700" fill="var(--color-teal)">
+      3. Held-Out Test Set
+    </text>
+    <text x="290" y="226" textAnchor="middle" fontSize="11.5" fill="var(--color-text-secondary)">
+      Final check on unseen data
+    </text>
+
+    <path d="M378 57 H432 V112" fill="none" stroke="var(--color-accent)" strokeWidth="2" />
+    <path d="M378 135 H432" fill="none" stroke="var(--color-accent)" strokeWidth="2" />
+    <path d="M378 213 H432 V160" fill="none" stroke="var(--color-teal)" strokeWidth="2" />
+
+    <rect
+      x="436"
+      y="84"
+      width="206"
+      height="96"
+      rx="14"
+      fill="var(--color-surface)"
+      stroke="var(--color-teal)"
+      strokeWidth="1.8"
+    />
+    <text x="539" y="116" textAnchor="middle" fontSize="13.5" fontWeight="700" fill="var(--color-text)">
+      Evaluated Model
+    </text>
+    <text x="539" y="138" textAnchor="middle" fontSize="11.5" fill="var(--color-text-secondary)">
+      Checks generalization gap
+    </text>
+    <text x="539" y="156" textAnchor="middle" fontSize="11" fill="var(--color-text-muted)">
+      (Training vs. unseen error)
+    </text>
+  </svg>
+</DiagramCaption>
+
+## 5. Step-by-Step Walkthrough
+
+First, let's clarify the two most common learning styles:
+
+- **Supervised learning:** Every training example includes an input (features) and a target answer (label)—for example, predicting house prices or classifying emails as spam vs. not spam.
+- **Unsupervised learning:** Examples have features but **no labels**. The algorithm looks for natural structure, such as grouping customers with similar shopping habits (**clustering**).
+
+<StepWalkthrough
+  heading="The Supervised Machine Learning Cycle"
+  steps={[
+    {
+      title: 'Collect and clean examples',
+      detail:
+        'Gather representative examples with measurable features (inputs) and reliable labels (targets). Missing values, duplicates, or biased samples hurt everything downstream.',
+    },
+    {
+      title: 'Split data before touching the model',
+      detail:
+        'Reserve a validation set for tuning choices and a held-out test set that remains locked away until final evaluation.',
+    },
+    {
+      title: 'Train the model on the training set',
+      detail:
+        'The algorithm makes predictions, measures how wrong they are using a loss (error) score, and updates internal parameters to reduce that error.',
+    },
+    {
+      title: 'Tune with the validation set',
+      detail:
+        'If training accuracy keeps climbing while validation accuracy starts dropping, the model is memorizing training noise (overfitting). Validation helps catch that early.',
+    },
+    {
+      title: 'Evaluate once on the held-out test set',
+      detail:
+        'Running the final model on untouched test examples estimates how well it generalizes to new data from the same distribution.',
+    },
+  ]}
+/>
+
+## 6. Interactive Demonstration
+
+This overview lesson focuses on the end-to-end machine learning workflow and data-splitting discipline, so a static workflow diagram communicates the pipeline clearly without artificial controls. In the very next lesson—<a href={getLessonHref('machine-learning/understanding-svm-and-kernel-trick')}>Understanding SVM and the Kernel Trick</a>—you will use an interactive 2D playground to move decision boundaries and inspect classification margins directly.
+
+## 7. Real-World Example
+
+Suppose an energy company wants to forecast hourly electricity demand for a city so power plants neither under-produce nor waste fuel.
+
+- **Features (inputs):** day of the week, hour of day, outside temperature, and recent demand levels.
+- **Label (target):** actual electricity demand (in megawatts) recorded for that hour.
+- **Workflow:** Engineers train on past years of historical records, validate using a separate season of weather patterns, and test on the most recent unseen months—checking whether the model handles heatwaves or holidays without overfitting to one unusual week.
+
+## 8. Common Misconceptions
+
+- **Misconception:** A model with 99% accuracy on its training data is ready to deploy.  
+  **Reality:** High training accuracy alone may mean the model memorized the practice examples (overfitting). You must check performance on unseen validation and test data.
+- **Misconception:** Unsupervised learning means the AI teaches itself everything with zero human choices.  
+  **Reality:** Humans still choose what features to measure, how data is cleaned, which algorithm to run, and how clusters or patterns are interpreted.
+- **Misconception:** More data automatically fixes bad or unrepresentative data.  
+  **Reality:** Collecting millions of biased or mislabeled examples simply teaches the model those flaws faster.
+
+<Callout type="tip" title="Rule of thumb for beginners">
+Always ask: "Was this accuracy measured on the training set, or on held-out examples the model never saw during training?"
+</Callout>
+
+## 9. Knowledge Check
+
+<KnowledgeCheck
+  client:visible
+  lessonId="machine-learning/how-machine-learning-works"
+  questions={[
+    {
+      question:
+        'In a dataset of apples where weight and color are used to predict whether an apple is "sweet" or "tart," what are weight and color called?',
+      options: [
+        'Labels',
+        'Features',
+        'Test splits',
+        'Hyperparameters',
+      ],
+      correctIndex: 1,
+      explanation:
+        'Features are the measurable input properties given to a model, while "sweet" or "tart" is the target label.',
+    },
+    {
+      question:
+        'Which problem occurs when a model scores very well on training data but poorly on new unseen examples?',
+      options: [
+        'Generalization',
+        'Unsupervised clustering',
+        'Overfitting',
+        'Feature scaling',
+      ],
+      correctIndex: 2,
+      explanation:
+        'Overfitting happens when a model captures quirks or noise specific to the training examples rather than the underlying pattern that transfers to new data.',
+    },
+    {
+      question:
+        'Why should the held-out test set stay untouched during model tuning?',
+      options: [
+        'So the test set provides an honest estimate of performance on unseen data',
+        'Because test data cannot contain numbers',
+        'Because validation data is only for unsupervised learning',
+        'To make the training loop run twice as fast',
+      ],
+      correctIndex: 0,
+      explanation:
+        'If you repeatedly adjust your model based on test set scores, you risk tailoring choices to the test set itself instead of measuring true generalization.',
+    },
+    {
+      question:
+        'Which scenario is an example of unsupervised learning?',
+      options: [
+        'Predicting tomorrow’s temperature using labeled weather history',
+        'Grouping news articles by topic similarity when no topic labels are provided',
+        'Classifying handwritten digits using 60,000 labeled images',
+        'Grading multiple-choice quizzes with an answer key',
+      ],
+      correctIndex: 1,
+      explanation:
+        'Unsupervised learning works without target labels, discovering structure such as clusters of similar items.',
+    },
+  ]}
+/>
+
+## 10. Key Takeaways
+
+- Machine learning models map **features** (measurable inputs) to predictions, using **labels** in supervised tasks or discovering structure without labels in unsupervised tasks.
+- Splitting data into **training**, **validation**, and **test** sets prevents fooling ourselves with memorized answers.
+- The goal of training is **generalization**—accurate performance on new, unseen examples, not just high training scores.
+
+## 11. Related Lessons
+
+- Previous: <a href={getLessonHref('ai-fundamentals/what-is-artificial-intelligence')}>What Is Artificial Intelligence?</a>
+- Next: <a href={getLessonHref('machine-learning/understanding-svm-and-kernel-trick')}>Understanding SVM and the Kernel Trick</a>
+- Browse track: <a href={getTrackHref('machine-learning')}>Machine Learning Track</a>
+- Foundational reference: Hastie, T., Tibshirani, R., &amp; Friedman, J., *The Elements of Statistical Learning*; scikit-learn User Guide (Cross-validation and Model Evaluation).

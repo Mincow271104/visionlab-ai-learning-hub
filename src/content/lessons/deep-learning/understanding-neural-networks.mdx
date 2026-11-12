@@ -1,0 +1,248 @@
+---
+title: "Understanding Neural Networks"
+description: "See how artificial neurons combine inputs using weights, biases, and activation functions across layers—and step through a real forward-pass calculation."
+track: "deep-learning"
+difficulty: "beginner"
+estimatedMinutes: 12
+order: 1
+tags:
+  - "neural-networks"
+  - "deep-learning"
+  - "forward-pass"
+  - "activation-functions"
+status: "published"
+---
+
+import Callout from '../../../components/learning/Callout.astro';
+import DiagramCaption from '../../../components/learning/DiagramCaption.astro';
+import KnowledgeCheck from '../../../components/learning/KnowledgeCheck';
+import StepWalkthrough from '../../../components/learning/StepWalkthrough.astro';
+import NeuralNetworkExplorer from '../../../components/visualization/NeuralNetworkExplorer';
+import { getLessonHref, getTrackHref } from '../../../utils/lessons';
+
+## 1. Introduction
+
+Modern breakthroughs in recognizing images, translating languages, and transcribing speech rely on **neural networks**. Despite being loosely inspired by brain cells, an artificial neural network is really a stack of simple arithmetic units working together.
+
+Each unit multiplies numbers by importance weights, adds an offset, and decides how strongly to pass a signal forward. When you connect many of those units in layers, simple building blocks combine into flexible pattern detectors.
+
+## 2. Learning Objectives
+
+By the end of this lesson, you will be able to:
+
+- Explain the roles of **inputs**, **weights**, **biases**, and **activation functions** inside a single artificial neuron.
+- Describe how **input**, **hidden**, and **output** layers work together during **forward propagation**.
+- Trace an actual forward-pass calculation using ReLU activation and Softmax output probabilities.
+- Explain at a high level how **backpropagation** uses prediction error to adjust weights during training.
+
+## 3. Intuitive Explanation
+
+Imagine deciding whether to bring an umbrella based on two clues: how dark the clouds look (`x₁`) and how humid the air feels (`x₂`).
+
+A single decision-maker (an **artificial neuron**) gives each clue an importance score called a **weight**:
+- Dark clouds might get a positive weight (`+0.8`), pushing toward "bring umbrella."
+- Your personal cautiousness sets a baseline offset called a **bias**: maybe you add `+0.1` so even borderline mornings lean slightly cautious.
+
+One neuron only makes one simple weighted blend. Stacking **hidden layers** lets earlier neurons detect small clues (like "stormy sky" or "muggy air"), and later layers combine those intermediate clues into a final prediction.
+
+## 4. Visual Explanation
+
+Inside every artificial neuron, computation happens in two clear stages: first a **linear weighted sum + bias**, then a nonlinear **activation function** such as ReLU (`max(0, z)`).
+
+<DiagramCaption
+  label="Figure 1"
+  caption="An artificial neuron multiplies each input by its weight, adds a bias offset to form z, and passes z through an activation function such as ReLU before sending the output forward."
+>
+  <svg
+    viewBox="0 0 650 230"
+    role="img"
+    aria-labelledby="neuron-diag-title neuron-diag-desc"
+  >
+    <title id="neuron-diag-title">
+      Anatomy of an artificial neuron
+    </title>
+    <desc id="neuron-diag-desc">
+      Diagram showing inputs x1 and x2 multiplied by weights w1 and w2 plus bias b entering a summation circle z = w1*x1 + w2*x2 + b, then passing through ReLU(z) = max(0, z) to produce output a.
+    </desc>
+
+    {/* Inputs */}
+    <rect x="20" y="34" width="84" height="44" rx="10" fill="var(--color-accent-soft)" stroke="var(--color-accent)" strokeWidth="1.6" />
+    <text x="62" y="61" textAnchor="middle" fontSize="13" fontWeight="700" fill="var(--color-text)">Input x₁</text>
+
+    <rect x="20" y="138" width="84" height="44" rx="10" fill="var(--color-accent-soft)" stroke="var(--color-accent)" strokeWidth="1.6" />
+    <text x="62" y="165" textAnchor="middle" fontSize="13" fontWeight="700" fill="var(--color-text)">Input x₂</text>
+
+    {/* Arrows with weights */}
+    <line x1="104" y1="56" x2="226" y2="102" stroke="var(--color-accent)" strokeWidth="2" />
+    <text x="158" y="66" textAnchor="middle" fontSize="12" fontWeight="700" fill="var(--color-accent)">× w₁</text>
+
+    <line x1="104" y1="160" x2="226" y2="118" stroke="var(--color-accent)" strokeWidth="2" />
+    <text x="158" y="156" textAnchor="middle" fontSize="12" fontWeight="700" fill="var(--color-accent)">× w₂</text>
+
+    {/* Bias */}
+    <rect x="218" y="18" width="90" height="34" rx="8" fill="var(--color-surface)" stroke="var(--color-border-strong)" strokeWidth="1.5" />
+    <text x="263" y="39" textAnchor="middle" fontSize="12" fontWeight="700" fill="var(--color-text)">Bias (+ b)</text>
+    <line x1="263" y1="52" x2="263" y2="76" stroke="var(--color-border-strong)" strokeWidth="2" />
+
+    {/* Weighted sum */}
+    <circle cx="263" cy="110" r="36" fill="var(--color-surface)" stroke="var(--color-accent)" strokeWidth="2" />
+    <text x="263" y="106" textAnchor="middle" fontSize="12.5" fontWeight="700" fill="var(--color-text)">Sum (z)</text>
+    <text x="263" y="123" textAnchor="middle" fontSize="10.5" fill="var(--color-text-secondary)">w₁x₁+w₂x₂+b</text>
+
+    <line x1="299" y1="110" x2="366" y2="110" stroke="var(--color-accent)" strokeWidth="2" />
+
+    {/* Activation */}
+    <rect x="370" y="76" width="144" height="68" rx="12" fill="var(--color-teal-soft)" stroke="var(--color-teal)" strokeWidth="1.8" />
+    <text x="442" y="104" textAnchor="middle" fontSize="13" fontWeight="700" fill="var(--color-teal)">Activation</text>
+    <text x="442" y="124" textAnchor="middle" fontSize="11.5" fill="var(--color-text-secondary)">ReLU(z) = max(0, z)</text>
+
+    <line x1="514" y1="110" x2="554" y2="110" stroke="var(--color-teal)" strokeWidth="2" />
+
+    {/* Output */}
+    <rect x="558" y="88" width="76" height="44" rx="10" fill="var(--color-surface)" stroke="var(--color-teal)" strokeWidth="1.8" />
+    <text x="596" y="115" textAnchor="middle" fontSize="12.5" fontWeight="700" fill="var(--color-text)">Output a</text>
+  </svg>
+</DiagramCaption>
+
+## 5. Step-by-Step Walkthrough
+
+Let's define each symbol before walking through a forward pass:
+
+- `x₁, x₂`: numeric input features entering the network.
+- `w`: connection weights scaling how strongly each input affects a neuron.
+- `b`: a neuron's bias offset shifting when it activates.
+- `z`: the pre-activation weighted sum (`w₁x₁ + w₂x₂ + b`).
+- `a = ReLU(z) = max(0, z)`: the neuron's activated output.
+
+<StepWalkthrough
+  steps={[
+    {
+      title: 'Input layer receives measurements',
+      detail:
+        'Input neurons do no computation; they pass raw scaled features (such as pixel brightness or sensor readings) into the first hidden layer.',
+    },
+    {
+      title: 'Hidden layer computes weighted sums',
+      detail:
+        'Every hidden neuron takes inputs from the previous layer, multiplies each by its connection weight, sums them, and adds a bias b.',
+    },
+    {
+      title: 'Activation function adds nonlinearity',
+      detail:
+        'Without an activation function like ReLU, stacking 10 layers would collapse mathematically into one straight linear function. Clamping negatives to zero lets stacked layers bend and combine boundaries.',
+    },
+    {
+      title: 'Output layer produces class scores and probabilities',
+      detail:
+        'Output neurons combine hidden activations into raw scores (logits). For classification, Softmax turns those scores into percentages between 0% and 100% that sum to 100%.',
+    },
+    {
+      title: 'How learning works (high-level backpropagation)',
+      detail:
+        'During training, a loss function measures how far the network’s prediction was from the true label. Backpropagation uses calculus (the chain rule) to send error signals backward from output to input so an optimizer can nudge weights and biases slightly in a better direction.',
+    },
+  ]}
+/>
+
+## 6. Interactive Demonstration
+
+Step through a real **2 → 3 → 2** forward pass below. Adjust `x₁` and `x₂` to watch exact weighted sums, ReLU cutoffs, and Softmax probabilities update live.
+
+<NeuralNetworkExplorer client:visible />
+
+## 7. Real-World Example
+
+Consider a voice assistant detecting a wake word (like *"Hey..."*) from short snippets of microphone audio.
+
+- **Input layer:** numeric energy measurements across sound frequencies over tiny time windows.
+- **Hidden layers:** earlier layers combine frequency clues into simple sound textures; deeper hidden layers recognize short syllables.
+- **Output layer:** outputs scores for *"wake word detected"* versus *"background speech or silence."*
+
+Because the forward pass is just fast matrix multiplication and simple activations, your device can run it locally in milliseconds once trained.
+
+## 8. Common Misconceptions
+
+- **Misconception:** Artificial neurons work identically to biological neurons in the human brain.  
+  **Reality:** Artificial neurons are simplified mathematical functions inspired loosely by biological signaling—they have no chemical synapses, emotions, or biological complexity.
+- **Misconception:** Deeper networks work fine even without activation functions.  
+  **Reality:** Without nonlinear activations (like ReLU), any stack of linear layers reduces to a single linear transformation and cannot learn curved or XOR-like patterns.
+- **Misconception:** Hidden layers have fixed meanings you can always read like labeled variables.  
+  **Reality:** Hidden neurons automatically learn intermediate numerical representations driven by training data; interpreting what individual neurons respond to can require specialized analysis.
+
+<Callout type="note" title="About probabilities from Softmax">
+A 95% Softmax probability reflects confidence relative to the model's training distribution—not a guarantee that the prediction is right on unfamiliar inputs.
+</Callout>
+
+## 9. Knowledge Check
+
+<KnowledgeCheck
+  client:visible
+  lessonId="deep-learning/understanding-neural-networks"
+  questions={[
+    {
+      question:
+        'What happens inside a hidden neuron when its pre-activation sum z is -0.40 and the activation function is ReLU?',
+      options: [
+        'It outputs -0.40 unchanged',
+        'It outputs 0 because ReLU(z) = max(0, z)',
+        'It reverses the sign and outputs +0.40',
+        'It deletes the neuron permanently from the network',
+      ],
+      correctIndex: 1,
+      explanation:
+        'ReLU (Rectified Linear Unit) returns z when z > 0 and 0 when z <= 0, so -0.40 becomes 0.',
+    },
+    {
+      question:
+        'Why do neural networks need nonlinear activation functions between layers?',
+      options: [
+        'Without nonlinear activations, stacked linear layers collapse into a single linear function',
+        'Because computers cannot multiply decimals without ReLU',
+        'To turn Softmax probabilities into negative numbers',
+        'To prevent the input layer from receiving numbers',
+      ],
+      correctIndex: 0,
+      explanation:
+        'A linear combination of linear functions is still linear. Nonlinear activations allow multi-layer networks to represent curved, complex relationships.',
+    },
+    {
+      question:
+        'What is the role of backpropagation during neural network training?',
+      options: [
+        'It displays the final probability during inference',
+        'It computes how each weight contributed to the prediction error so weights can be updated',
+        'It converts images into RGB pixel arrays',
+        'It guarantees zero overfitting without a validation set',
+      ],
+      correctIndex: 1,
+      explanation:
+        'During training, forward propagation produces a prediction, a loss function measures error, and backpropagation traces gradients backward so weights and biases can be adjusted.',
+    },
+    {
+      question:
+        'What does the bias term b do in z = w₁x₁ + w₂x₂ + b?',
+      options: [
+        'It forces every input to equal zero',
+        'It shifts the neuron’s activation threshold up or down independently of the inputs',
+        'It measures test set accuracy',
+        'It replaces all connection weights',
+      ],
+      correctIndex: 1,
+      explanation:
+        'Bias acts as an adjustable offset, allowing a neuron to activate more easily or stay quiet until weighted inputs clear a higher threshold.',
+    },
+  ]}
+/>
+
+## 10. Key Takeaways
+
+- An artificial neuron computes a **weighted sum plus bias**, followed by a nonlinear **activation function** such as ReLU.
+- **Hidden layers** build intermediate representations; **output layers** produce scores (often normalized into probabilities via **Softmax**).
+- **Forward propagation** turns inputs into predictions; **backpropagation** (during training) guides weight updates from prediction errors.
+
+## 11. Related Lessons
+
+- Previous: <a href={getLessonHref('machine-learning/understanding-svm-and-kernel-trick')}>Understanding SVM and the Kernel Trick</a>
+- Next: <a href={getLessonHref('computer-vision/how-computers-see-images')}>How Do Computers See Images?</a>
+- Browse track: <a href={getTrackHref('deep-learning')}>Deep Learning Track</a>
+- Foundational reference: Goodfellow, I., Bengio, Y., &amp; Courville, A., *Deep Learning* (Chapter 6: Deep Feedforward Networks); Rumelhart, D. E., Hinton, G. E., &amp; Williams, R. J. (1986), *Learning representations by back-propagating errors*, Nature.

@@ -1,0 +1,356 @@
+---
+title: "What Is Artificial Intelligence?"
+description: "Learn what artificial intelligence means in plain English, how learning systems differ from rule-based software, and how AI, Machine Learning, and Deep Learning relate."
+track: "ai-fundamentals"
+difficulty: "beginner"
+estimatedMinutes: 8
+order: 1
+tags:
+  - "ai-fundamentals"
+  - "rules-vs-learning"
+  - "narrow-ai"
+status: "published"
+---
+
+import Callout from '../../../components/learning/Callout.astro';
+import DiagramCaption from '../../../components/learning/DiagramCaption.astro';
+import KnowledgeCheck from '../../../components/learning/KnowledgeCheck';
+import StepWalkthrough from '../../../components/learning/StepWalkthrough.astro';
+import { getLessonHref, getTrackHref } from '../../../utils/lessons';
+
+## 1. Introduction
+
+You already interact with **artificial intelligence (AI)** whenever a phone unlocks with your face, a map app predicts traffic delays, or an email inbox filters spam. Yet the term "AI" is often wrapped in science-fiction imagery that hides how ordinary modern AI really is.
+
+At its core, artificial intelligence is the field of building computer systems that can perform tasks normally associated with human perception, pattern recognition, or decision-making. Instead of thinking like a conscious mind, today's AI systems rely on carefully designed mathematical patterns and large collections of examples.
+
+## 2. Learning Objectives
+
+By the end of this lesson, you will be able to:
+
+- Explain in plain English how **rule-based programming** differs from **machine learning systems**.
+- Distinguish **Artificial Intelligence**, **Machine Learning (ML)**, and **Deep Learning (DL)** as nested fields.
+- Describe what **Narrow AI** means and recognize why modern AI excels at specific tasks without general human understanding.
+- Identify key real-world limitations of AI systems, including sensitivity to unfamiliar data and lack of common-sense awareness.
+
+## 3. Intuitive Explanation
+
+Imagine teaching a friend how to sort ripe strawberries from unripe ones.
+
+With **traditional rule-based programming**, you act like a strict recipe writer. You write explicit instructions ahead of time: *"If the fruit is more than 80% red and softer than threshold X, mark it ripe; otherwise, mark it unripe."* That works cleanly when you can write down every rule—but writing exact pixel-by-pixel rules for shadows, angles, and lighting on real strawberries quickly becomes impossible.
+
+With a **learning system**, you take a different approach. Instead of writing rigid rules by hand, you show the computer thousands of labeled strawberry photos and let an algorithm adjust internal patterns until it separates ripe from unripe reliably.
+
+<Callout type="note" title="Where the analogy simplifies reality">
+Unlike a human friend who understands what a strawberry tastes like or why sunlight changes color, an AI model only sees numerical measurements (such as pixel brightness values) and optimizes mathematical scores.
+</Callout>
+
+## 4. Visual Explanation
+
+People often use "AI," "Machine Learning," and "Deep Learning" as if they were completely different technologies. In practice, they form nested layers—each inside the broader umbrella above it.
+
+<DiagramCaption
+  label="Figure 1"
+  caption="Artificial Intelligence is the broad field of building capable systems; Machine Learning is the subset that learns patterns from data; Deep Learning is the subset of Machine Learning based on multi-layered neural networks."
+>
+  <svg
+    viewBox="0 0 640 310"
+    role="img"
+    aria-labelledby="ai-nested-title ai-nested-desc"
+  >
+    <title id="ai-nested-title">
+      Nested relationship of AI, Machine Learning, and Deep Learning
+    </title>
+    <desc id="ai-nested-desc">
+      Three nested rounded rectangles: outer Artificial Intelligence containing Machine Learning, which contains Deep Learning, paired with a comparison of Rule-Based vs Learning Systems.
+    </desc>
+    <rect
+      x="10"
+      y="10"
+      width="350"
+      height="290"
+      rx="22"
+      fill="var(--color-bg-subtle)"
+      stroke="var(--color-accent)"
+      strokeWidth="2"
+    />
+    <text
+      x="28"
+      y="40"
+      fontSize="15"
+      fontWeight="700"
+      fill="var(--color-accent)"
+    >
+      Artificial Intelligence (AI)
+    </text>
+    <text
+      x="28"
+      y="60"
+      fontSize="12"
+      fill="var(--color-text-secondary)"
+    >
+      Any technique enabling intelligent-seeming behavior
+    </text>
+
+    <rect
+      x="30"
+      y="82"
+      width="310"
+      height="200"
+      rx="18"
+      fill="var(--color-accent-soft)"
+      stroke="var(--color-accent)"
+      strokeWidth="1.8"
+    />
+    <text
+      x="48"
+      y="110"
+      fontSize="14.5"
+      fontWeight="700"
+      fill="var(--color-text)"
+    >
+      Machine Learning (ML)
+    </text>
+    <text
+      x="48"
+      y="130"
+      fontSize="12"
+      fill="var(--color-text-secondary)"
+    >
+      Systems that learn patterns from examples
+    </text>
+
+    <rect
+      x="52"
+      y="152"
+      width="266"
+      height="112"
+      rx="14"
+      fill="var(--color-teal-soft)"
+      stroke="var(--color-teal)"
+      strokeWidth="1.8"
+    />
+    <text
+      x="70"
+      y="182"
+      fontSize="14"
+      fontWeight="700"
+      fill="var(--color-teal)"
+    >
+      Deep Learning (DL)
+    </text>
+    <text
+      x="70"
+      y="204"
+      fontSize="12"
+      fill="var(--color-text-secondary)"
+    >
+      Multi-layered neural networks for
+    </text>
+    <text
+      x="70"
+      y="222"
+      fontSize="12"
+      fill="var(--color-text-secondary)"
+    >
+      vision, speech, and language
+    </text>
+
+    <rect
+      x="380"
+      y="24"
+      width="248"
+      height="120"
+      rx="14"
+      fill="var(--color-surface)"
+      stroke="var(--color-border-strong)"
+      strokeWidth="1.5"
+    />
+    <text
+      x="398"
+      y="52"
+      fontSize="13.5"
+      fontWeight="700"
+      fill="var(--color-text)"
+    >
+      Rule-Based Programming
+    </text>
+    <text
+      x="398"
+      y="76"
+      fontSize="12"
+      fill="var(--color-text-secondary)"
+    >
+      Human writes explicit IF/ELSE rules
+    </text>
+    <text
+      x="398"
+      y="98"
+      fontSize="12"
+      fill="var(--color-text-secondary)"
+    >
+      Data + Rules → Fixed Answers
+    </text>
+    <text
+      x="398"
+      y="122"
+      fontSize="11.5"
+      fill="var(--color-text-muted)"
+    >
+      Best for well-defined logic &amp; math
+    </text>
+
+    <rect
+      x="380"
+      y="166"
+      width="248"
+      height="120"
+      rx="14"
+      fill="var(--color-surface)"
+      stroke="var(--color-accent)"
+      strokeWidth="1.5"
+    />
+    <text
+      x="398"
+      y="194"
+      fontSize="13.5"
+      fontWeight="700"
+      fill="var(--color-accent)"
+    >
+      Machine Learning Approach
+    </text>
+    <text
+      x="398"
+      y="218"
+      fontSize="12"
+      fill="var(--color-text-secondary)"
+    >
+      Algorithm discovers patterns in data
+    </text>
+    <text
+      x="398"
+      y="240"
+      fontSize="12"
+      fill="var(--color-text-secondary)"
+    >
+      Data + Examples → Learned Model
+    </text>
+    <text
+      x="398"
+      y="264"
+      fontSize="11.5"
+      fill="var(--color-text-muted)"
+    >
+      Best for messy vision &amp; text tasks
+    </text>
+  </svg>
+</DiagramCaption>
+
+## 5. Step-by-Step Walkthrough
+
+<StepWalkthrough
+  steps={[
+    {
+      title: 'Frame the task cleanly',
+      detail:
+        'Decide what input goes into the system (for example, an image or email text) and what output is needed (such as a category label or numeric estimate).',
+    },
+    {
+      title: 'Choose rules or learning',
+      detail:
+        'If exact rules are short and unchanging—like calculating sales tax—traditional rule-based code is simpler and more reliable. If patterns vary widely—like recognizing handwritten digits—machine learning is a better fit.',
+    },
+    {
+      title: 'Stay within Narrow AI boundaries',
+      detail:
+        'Modern deployed systems are examples of Narrow AI (also called weak AI): they handle one bounded task well, rather than possessing broad human-like reasoning across unrelated domains.',
+    },
+    {
+      title: 'Account for uncertainty',
+      detail:
+        'Because learning systems output probabilities or scores derived from training examples, engineers monitor where errors happen and keep humans in the loop for high-stakes decisions.',
+    },
+  ]}
+/>
+
+## 6. Interactive Demonstration
+
+This foundational lesson relies on a static conceptual map rather than a live slider simulation because its goal is to clarify vocabulary and system boundaries—comparing rules, learning, and nested subfields. In the upcoming Machine Learning and Deep Learning lessons, you will interact directly with hands-on plotting and neural network sandboxes where manipulating numbers builds geometric intuition.
+
+## 7. Real-World Example
+
+Consider **airport baggage screening or medical imaging assistance** versus **a spreadsheet tax formula**:
+
+- A **tax calculator** follows explicit legal rules written by programmers. Every input produces one exact, deterministic output.
+- A **computer vision quality-inspection camera** on a factory line checks manufactured parts for tiny scratches or missing components. Lighting, angles, and surface textures vary too much for hand-written pixel rules, so engineers train a Narrow AI vision model on labeled photos of good and defective parts.
+
+Even then, that factory vision model cannot summarize an email or drive a car—its capability is strictly narrow.
+
+## 8. Common Misconceptions
+
+- **Misconception:** AI systems understand the world the same way humans do.  
+  **Reality:** Modern AI systems detect statistical patterns in numerical inputs. They have no conscious awareness, lived experience, or common-sense grasp outside their training setup.
+- **Misconception:** "AI" and "Deep Learning" mean the exact same thing.  
+  **Reality:** Deep Learning is a specialized subset of Machine Learning using multi-layered neural networks, and Machine Learning is itself a subset of the broader AI field.
+- **Misconception:** AI is always better than traditional rule-based software.  
+  **Reality:** When exact rules exist, traditional code is faster, cheaper, easier to audit, and 100% predictable.
+
+## 9. Knowledge Check
+
+<KnowledgeCheck
+  client:visible
+  lessonId="ai-fundamentals/what-is-artificial-intelligence"
+  questions={[
+    {
+      question:
+        'What is the main difference between traditional rule-based programming and machine learning?',
+      options: [
+        'Rule-based programs cannot run on modern computers',
+        'Rule-based programs rely on explicit human-written rules, while machine learning discovers patterns from examples',
+        'Machine learning never requires any data',
+        'Rule-based programs always use neural networks',
+      ],
+      correctIndex: 1,
+      explanation:
+        'In rule-based programming, developers encode exact IF/ELSE logic. In machine learning, an algorithm adjusts model parameters from labeled or structured examples instead of relying solely on hand-written rules.',
+    },
+    {
+      question:
+        'Which statement accurately describes the relationship between AI, Machine Learning, and Deep Learning?',
+      options: [
+        'Deep Learning contains Machine Learning, which contains AI',
+        'AI, Machine Learning, and Deep Learning are completely unrelated fields',
+        'Deep Learning is a subset of Machine Learning, which is a subset of AI',
+        'Machine Learning only exists for text, while AI only handles images',
+      ],
+      correctIndex: 2,
+      explanation:
+        'AI is the overarching discipline; Machine Learning is the branch focused on learning from data; Deep Learning is the branch of Machine Learning using multi-layered neural networks.',
+    },
+    {
+      question: 'Why are today’s deployed AI systems referred to as "Narrow AI"?',
+      options: [
+        'Because they only run on small mobile phones',
+        'Because they specialize in specific bounded tasks rather than general human-level reasoning',
+        'Because they can only process one word per minute',
+        'Because they never make mistakes',
+      ],
+      correctIndex: 1,
+      explanation:
+        'Narrow AI systems perform well on a defined task (like spam filtering or object recognition) but cannot transfer that capability on their own to unrelated tasks or common-sense reasoning.',
+    },
+  ]}
+/>
+
+## 10. Key Takeaways
+
+- **Artificial Intelligence** is the broad goal of building systems capable of perception, pattern recognition, or decision support.
+- **Rule-based software** excels when rules are clear and fixed; **Machine Learning** shines when patterns are too complex to write manually.
+- **Deep Learning** is a layered neural-network subset of Machine Learning.
+- Practical systems today are **Narrow AI**: powerful within a defined scope, yet limited by their training data and lack of general understanding.
+
+## 11. Related Lessons
+
+- Next in the roadmap: <a href={getLessonHref('machine-learning/how-machine-learning-works')}>How Does Machine Learning Work?</a>
+- Browse track: <a href={getTrackHref('ai-fundamentals')}>AI Fundamentals Track</a>
+- Foundational reference: Russell, S., &amp; Norvig, P., *Artificial Intelligence: A Modern Approach* (4th ed.); NIST AI Risk Management Framework (for AI system limitations and lifecycle concepts).

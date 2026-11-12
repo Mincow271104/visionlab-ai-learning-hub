@@ -1,0 +1,428 @@
+---
+import type { MarkdownHeading } from 'astro';
+import MainLayout from './MainLayout.astro';
+import StatusBadge from '../components/ui/StatusBadge.astro';
+import LessonCompletionButton from '../components/learning/LessonCompletionButton';
+import { getTrackHref, type LessonSummary } from '../utils/lessons';
+import {
+  DIFFICULTY_LABELS,
+  getTrackById,
+  type DifficultyLevel,
+  type TrackId,
+} from '../utils/tracks';
+import { withBase } from '../utils/url';
+
+interface Props {
+  lessonId: string;
+  title: string;
+  description: string;
+  track: TrackId;
+  difficulty: DifficultyLevel;
+  estimatedMinutes: number;
+  tags: readonly string[];
+  headings: readonly MarkdownHeading[];
+  previousLesson: LessonSummary | null;
+  nextLesson: LessonSummary | null;
+}
+
+const {
+  lessonId,
+  title,
+  description,
+  track,
+  difficulty,
+  estimatedMinutes,
+  tags,
+  headings,
+  previousLesson,
+  nextLesson,
+} = Astro.props;
+
+const trackInfo = getTrackById(track);
+const trackHref = getTrackHref(track);
+const roadmapHref = withBase('/roadmap/');
+const exploreHref = withBase('/explore/');
+
+// Keep level-2 headings for a clean, beginner-friendly table of contents
+const tocHeadings = headings.filter((h) => h.depth === 2);
+---
+
+<MainLayout title={`${title} — VisionLab`} description={description}>
+  <div class="lesson-shell">
+    <div class="container lesson-shell__container">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href={withBase('/')}>Home</a></li>
+          <li><a href={roadmapHref}>Roadmap</a></li>
+          <li><a href={trackHref}>{trackInfo.title}</a></li>
+          <li aria-current="page">{title}</li>
+        </ol>
+      </nav>
+
+      <header class="lesson-header">
+        <div class="lesson-header__meta">
+          <StatusBadge variant="accent">
+            {trackInfo.shortLabel} · {trackInfo.title}
+          </StatusBadge>
+          <StatusBadge variant="neutral">
+            {DIFFICULTY_LABELS[difficulty]}
+          </StatusBadge>
+          <span class="lesson-header__time">{estimatedMinutes} min read</span>
+        </div>
+
+        <h1 class="lesson-header__title">{title}</h1>
+        <p class="lesson-header__description">{description}</p>
+
+        <ul class="lesson-header__tags" aria-label="Lesson tags">
+          {tags.map((tag) => (
+            <li class="vl-tag">#{tag}</li>
+          ))}
+        </ul>
+      </header>
+
+      <div class="lesson-grid">
+        {tocHeadings.length > 0 && (
+          <aside class="lesson-toc" aria-label="Table of contents">
+            <div class="lesson-toc__card">
+              <p class="lesson-toc__heading">In this lesson</p>
+              <ol class="lesson-toc__list">
+                {tocHeadings.map((heading) => (
+                  <li>
+                    <a href={`#${heading.slug}`}>{heading.text}</a>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </aside>
+        )}
+
+        <article class="lesson-prose">
+          <slot />
+
+          <LessonCompletionButton
+            client:load
+            lessonId={lessonId}
+            lessonTitle={title}
+          />
+
+          <nav class="lesson-pager" aria-label="Lesson sequence navigation">
+            <div class="lesson-pager__slot">
+              {previousLesson ? (
+                <a href={previousLesson.href} class="lesson-pager__card">
+                  <span class="lesson-pager__dir">&larr; Previous lesson</span>
+                  <span class="lesson-pager__title">
+                    {previousLesson.title}
+                  </span>
+                </a>
+              ) : (
+                <a href={trackHref} class="lesson-pager__card">
+                  <span class="lesson-pager__dir">&larr; Back to track</span>
+                  <span class="lesson-pager__title">{trackInfo.title}</span>
+                </a>
+              )}
+            </div>
+
+            <div class="lesson-pager__slot">
+              {nextLesson ? (
+                <a
+                  href={nextLesson.href}
+                  class="lesson-pager__card lesson-pager__card--next"
+                >
+                  <span class="lesson-pager__dir">Next lesson &rarr;</span>
+                  <span class="lesson-pager__title">{nextLesson.title}</span>
+                </a>
+              ) : (
+                <a
+                  href={exploreHref}
+                  class="lesson-pager__card lesson-pager__card--next"
+                >
+                  <span class="lesson-pager__dir">Explore more &rarr;</span>
+                  <span class="lesson-pager__title">Browse all lessons</span>
+                </a>
+              )}
+            </div>
+          </nav>
+        </article>
+      </div>
+    </div>
+  </div>
+</MainLayout>
+
+<style>
+  .lesson-shell {
+    padding-block: var(--space-8) var(--space-16);
+  }
+
+  .breadcrumb {
+    margin-bottom: var(--space-5);
+  }
+
+  .breadcrumb ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.86rem;
+    color: var(--color-text-muted);
+  }
+
+  .breadcrumb li:not(:last-child)::after {
+    content: '/';
+    margin-left: 0.45rem;
+    color: var(--color-border-strong);
+  }
+
+  .breadcrumb a {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+  }
+
+  .breadcrumb a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .lesson-header {
+    padding-bottom: var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: var(--space-8);
+    max-width: 52rem;
+  }
+
+  .lesson-header__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+
+  .lesson-header__time {
+    font-size: 0.86rem;
+    color: var(--color-text-muted);
+    font-weight: 500;
+  }
+
+  .lesson-header__title {
+    font-size: clamp(1.85rem, 3.6vw, 2.6rem);
+    font-weight: 800;
+    margin-bottom: var(--space-3);
+  }
+
+  .lesson-header__description {
+    font-size: 1.08rem;
+    line-height: 1.65;
+    margin-bottom: var(--space-4);
+  }
+
+  .lesson-header__tags {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .lesson-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+    align-items: start;
+  }
+
+  @media (min-width: 1024px) {
+    .lesson-grid {
+      grid-template-columns: 16rem minmax(0, 1fr);
+      gap: var(--space-10);
+    }
+  }
+
+  .lesson-toc {
+    position: static;
+  }
+
+  @media (min-width: 1024px) {
+    .lesson-toc {
+      position: sticky;
+      top: calc(var(--header-height) + var(--space-5));
+    }
+  }
+
+  .lesson-toc__card {
+    padding: var(--space-4);
+    background-color: var(--color-bg-subtle);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+  }
+
+  .lesson-toc__heading {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-3);
+  }
+
+  .lesson-toc__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    font-size: 0.88rem;
+  }
+
+  .lesson-toc__list a {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    display: block;
+    line-height: 1.35;
+  }
+
+  .lesson-toc__list a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  /* Readable article typography */
+  .lesson-prose {
+    min-width: 0;
+    max-width: 48rem;
+  }
+
+  .lesson-prose :global(h2) {
+    font-size: clamp(1.35rem, 2.2vw, 1.65rem);
+    margin-top: var(--space-10);
+    margin-bottom: var(--space-3);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+    scroll-margin-top: calc(var(--header-height) + var(--space-4));
+  }
+
+  .lesson-prose :global(h2:first-of-type) {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .lesson-prose :global(h3) {
+    font-size: 1.15rem;
+    margin-top: var(--space-6);
+    margin-bottom: var(--space-2);
+  }
+
+  .lesson-prose :global(p) {
+    margin-bottom: var(--space-4);
+    font-size: 1.02rem;
+    line-height: 1.72;
+  }
+
+  .lesson-prose :global(ul),
+  .lesson-prose :global(ol) {
+    margin: 0 0 var(--space-4);
+    padding-left: 1.35rem;
+    color: var(--color-text-secondary);
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    line-height: 1.68;
+  }
+
+  .lesson-prose :global(li strong) {
+    color: var(--color-text);
+  }
+
+  .lesson-prose :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    padding: 0.12rem 0.35rem;
+    border-radius: var(--radius-sm);
+    background-color: var(--color-surface-elevated);
+    color: var(--color-text);
+  }
+
+  .lesson-prose :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin-block: var(--space-5);
+    font-size: 0.94rem;
+    display: block;
+    overflow-x: auto;
+  }
+
+  .lesson-prose :global(th),
+  .lesson-prose :global(td) {
+    text-align: left;
+    padding: 0.65rem 0.85rem;
+    border: 1px solid var(--color-border);
+  }
+
+  .lesson-prose :global(th) {
+    background-color: var(--color-bg-subtle);
+    color: var(--color-text);
+    font-weight: 700;
+  }
+
+  .lesson-pager {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    margin-top: var(--space-8);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+
+  @media (min-width: 640px) {
+    .lesson-pager {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .lesson-pager__card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: var(--space-4);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    background-color: var(--color-surface);
+    text-decoration: none;
+    height: 100%;
+    transition:
+      border-color var(--transition-fast),
+      background-color var(--transition-fast);
+  }
+
+  .lesson-pager__card:hover {
+    border-color: var(--color-accent);
+    background-color: var(--color-bg-subtle);
+  }
+
+  .lesson-pager__card--next {
+    text-align: left;
+  }
+
+  @media (min-width: 640px) {
+    .lesson-pager__card--next {
+      text-align: right;
+    }
+  }
+
+  .lesson-pager__dir {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--color-accent);
+  }
+
+  .lesson-pager__title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+</style>

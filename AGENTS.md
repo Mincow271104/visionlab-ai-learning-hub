@@ -83,14 +83,14 @@ Keep responsibilities separated and follow this structure. Small, justified addi
     │       ├── computer-vision/
     │       └── generative-ai/
     ├── components/
-    │   ├── layout/
-    │   ├── learning/
-    │   ├── visualization/
+    │   ├── layout/                 # SiteHeader.astro, SiteFooter.astro
+    │   ├── learning/               # Callout, DiagramCaption, StepWalkthrough, LessonCard, KnowledgeCheck, LessonExplorer, MyLearningDashboard, LessonCompletionButton, RoadmapTrackCard
+    │   ├── visualization/          # SVMPlayground.tsx, NeuralNetworkExplorer.tsx
     │   └── ui/
-    ├── layouts/
-    ├── pages/
-    ├── styles/
-    └── utils/
+    ├── layouts/                    # MainLayout.astro, LessonLayout.astro
+    ├── pages/                      # index, roadmap, explore, my-learning, tracks/[track], lessons/[...slug]
+    ├── styles/                     # tokens.css, global.css, interactive.css
+    └── utils/                      # url.ts, tracks.ts, lessons.ts, search.ts, progress.ts
 ```
 
 ### File naming
@@ -190,15 +190,36 @@ Every interactive component must:
 - Separate visualization logic from lesson prose so it can be reused.
 
 Preferred reusable component patterns include:
-- SVMPlayground
-- NeuralNetworkExplorer
-- ConvolutionDemo
-- shared DiagramCaption, Callout, KnowledgeCheck, and StepWalkthrough components.
+- `SVMPlayground` (`src/components/visualization/SVMPlayground.tsx` — implemented as an explicit no-training conceptual linear-boundary and kernel-intuition simulation)
+- `NeuralNetworkExplorer` (`src/components/visualization/NeuralNetworkExplorer.tsx` — implemented as a fixed-weight 2→3→2 ReLU + Softmax forward-pass simulator)
+- `ConvolutionDemo` (planned for a future package; not yet implemented)
+- shared `DiagramCaption.astro`, `Callout.astro`, `StepWalkthrough.astro`, `LessonCard.astro`, `KnowledgeCheck.tsx`, `LessonCompletionButton.tsx`, `LessonExplorer.tsx`, `MyLearningDashboard.tsx`, and `RoadmapTrackCard.astro`.
 
-Do not build all of these just because they are listed. Implement only those needed by published lessons.
+Keep `ConvolutionDemo` (and any future interactive modules) scoped cleanly until lessons require them.
 
-## 8. Navigation, Search, and Learning Progress
+## 8. Navigation, Search, Learning Progress, and Authoring Workflow
 
+### Implemented routes and data flow
+- **Homepage (`/`):** Overview, learning paths preview derived dynamically from published lessons, and navigation cards.
+- **Learning Roadmap (`/roadmap/`):** Full 5-track curriculum sequence linking to `/tracks/<track>/` and published lessons.
+- **Track Pages (`/tracks/[track]/`):** Dynamic track overview showing published lessons in roadmap order plus clearly marked planned topics.
+- **Lesson Pages (`/lessons/[...slug]/`):** Generated strictly from `getPublishedLessons()` (`status === 'published'`), rendered inside `LessonLayout.astro` with breadcrumbs, sticky section outline (`h2`), prev/next links, and `LessonCompletionButton`.
+- **Explore Lessons (`/explore/`):** Client-hydrated `LessonExplorer` powered by `filterLessons()` (`src/utils/search.ts`) supporting case-insensitive search across title, description, tags, and track title, plus track/difficulty filters and empty/reset states.
+- **My Learning (`/my-learning/`):** Client-hydrated `MyLearningDashboard` showing overall progress, per-track completion, recorded quiz scores, local-storage notice, and safe reset.
+
+### Local progress schema (`src/utils/progress.ts`)
+- Stored optionally under `localStorage` key `visionlab-progress-v1` with `version: 1`, `completedLessons: string[]`, and `quizScores: Record<string, { score: number; total: number; updatedAt: string }>`.
+- Must remain SSR-safe and fall back gracefully if `localStorage` is unavailable or contains malformed JSON.
+- Progress stays strictly local to the current browser/device and is never synced or tied to user accounts.
+
+### Lesson authoring workflow
+1. Create an `.mdx` file under `src/content/lessons/<track>/<kebab-case-slug>.mdx` following `docs/templates/lesson-template.mdx`.
+2. Ensure all required metadata (`title`, `description`, `track`, `difficulty`, `estimatedMinutes`, `order`, `tags`, `status`) passes `src/content.config.ts`.
+3. Use `getLessonHref('<track>/<slug>')`, `getTrackHref('<track>')`, or `withBase()` for internal links.
+4. Keep SVG diagrams accessible (`role="img"`, `<title>`, `<desc>`, `aria-labelledby`, camelCase JSX attributes).
+5. Set `status: "published"` only after all 11 sections, `KnowledgeCheck`, and build/preview checks pass.
+
+### Rules for navigation, search, and storage
 - Roadmap stages must link only to implemented tracks or clearly marked planned sections.
 - Explore/search results must link to valid published lesson routes.
 - Search should work without a backend and should handle case-insensitive title, description, and tag matches.

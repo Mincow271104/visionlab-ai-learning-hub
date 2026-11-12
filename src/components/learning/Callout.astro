@@ -1,0 +1,93 @@
+---
+interface Props {
+  type?: 'note' | 'tip' | 'important' | 'warning';
+  title?: string;
+}
+
+const { type = 'note', title } = Astro.props;
+
+const defaultTitles: Record<NonNullable<Props['type']>, string> = {
+  note: 'Note',
+  tip: 'Tip',
+  important: 'Key Idea',
+  warning: 'Watch Out',
+};
+
+const icons: Record<NonNullable<Props['type']>, string> = {
+  note: 'i',
+  tip: '✓',
+  important: '★',
+  warning: '!',
+};
+
+const resolvedTitle = title ?? defaultTitles[type];
+---
+
+<aside class={`callout callout--${type}`} aria-label={resolvedTitle}>
+  <div class="callout__header">
+    <span class="callout__icon" aria-hidden="true">{icons[type]}</span>
+    <span class="callout__title">{resolvedTitle}</span>
+  </div>
+  <div class="callout__body">
+    <slot />
+  </div>
+</aside>
+
+<style>
+  .callout {
+    margin-block: var(--space-5);
+    padding: var(--space-4) var(--space-5);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    border-left-width: 4px;
+    background-color: var(--color-surface);
+  }
+
+  .callout--note {
+    border-left-color: var(--color-accent);
+    background-color: var(--color-accent-soft);
+  }
+
+  .callout--tip {
+    border-left-color: var(--color-teal);
+    background-color: var(--color-teal-soft);
+  }
+
+  .callout--important {
+    border-left-color: var(--color-accent);
+    background-color: var(--color-bg-subtle);
+  }
+
+  .callout--warning {
+    border-left-color: var(--color-amber);
+    background-color: var(--color-amber-soft);
+  }
+
+  .callout__header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  .callout__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.35rem;
+    height: 1.35rem;
+    border-radius: var(--radius-full);
+    font-size: 0.78rem;
+    font-weight: 800;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border-strong);
+    color: var(--color-text);
+    flex-shrink: 0;
+  }
+
+  .callout__body :global(p:last-child) {
+    margin-bottom: 0;
+  }
+</style>

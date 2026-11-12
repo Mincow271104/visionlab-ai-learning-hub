@@ -1,0 +1,167 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import LessonCard from '../../components/learning/LessonCard.astro';
+import StatusBadge from '../../components/ui/StatusBadge.astro';
+import {
+  getPublishedLessonsByTrack,
+  getTrackHref,
+  toLessonSummary,
+} from '../../utils/lessons';
+import {
+  LEARNING_TRACKS,
+  type LearningTrackInfo,
+} from '../../utils/tracks';
+import { withBase } from '../../utils/url';
+
+export function getStaticPaths() {
+  return LEARNING_TRACKS.map((track) => ({
+    params: { track: track.id },
+    props: { track },
+  }));
+}
+
+interface Props {
+  track: LearningTrackInfo;
+}
+
+const { track } = Astro.props;
+const entries = await getPublishedLessonsByTrack(track.id);
+const lessons = entries.map(toLessonSummary);
+
+const trackIndex = LEARNING_TRACKS.findIndex((item) => item.id === track.id);
+const previousTrack = trackIndex > 0 ? LEARNING_TRACKS[trackIndex - 1] : null;
+const nextTrack =
+  trackIndex < LEARNING_TRACKS.length - 1
+    ? LEARNING_TRACKS[trackIndex + 1]
+    : null;
+---
+
+<MainLayout
+  title={`${track.title} — VisionLab`}
+  description={track.summary}
+>
+  <section class="section">
+    <div class="container">
+      <nav class="track-breadcrumb" aria-label="Breadcrumb">
+        <a href={withBase('/')}>Home</a>
+        <span aria-hidden="true">/</span>
+        <a href={withBase('/roadmap/')}>Roadmap</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">{track.title}</span>
+      </nav>
+
+      <header class="track-hero">
+        <div class="track-hero__badges">
+          <StatusBadge variant="accent">{track.shortLabel} of 5</StatusBadge>
+          <StatusBadge variant={lessons.length > 0 ? 'teal' : 'amber'}>
+            {lessons.length > 0
+              ? `${lessons.length} published ${
+                  lessons.length === 1 ? 'lesson' : 'lessons'
+                }`
+              : 'Lessons planned · Coming soon'}
+          </StatusBadge>
+        </div>
+
+        <h1 class="track-hero__title">{track.title}</h1>
+        <p class="track-hero__summary">{track.summary}</p>
+      </header>
+
+      {lessons.length === 0 ? (
+        <div class="vl-widget" role="status">
+          <h2 class="vl-widget__title" style={{ marginBottom: '0.5rem' }}>
+            No published lessons in this track yet
+          </h2>
+          <p style={{ marginBottom: '1rem' }}>
+            This track is part of the VisionLab curriculum roadmap. Planned
+            topics include {track.sampleTopics.join(', ')}.
+          </p>
+          <div class="vl-btn-row">
+            <a href={withBase('/roadmap/')} class="btn btn--primary">
+              Return to Roadmap
+            </a>
+            <a href={withBase('/explore/')} class="btn btn--secondary">
+              Explore Published Lessons
+            </a>
+          </div>
+        </div>
+      ) : (
+        <div class="vl-card-grid">
+          {lessons.map((lesson) => (
+            <LessonCard lesson={lesson} showTrackBadge={false} />
+          ))}
+        </div>
+      )}
+
+      <nav class="track-pager" aria-label="Track sequence navigation">
+        <div>
+          {previousTrack && (
+            <a href={getTrackHref(previousTrack.id)} class="btn btn--secondary">
+              &larr; {previousTrack.shortLabel}: {previousTrack.title}
+            </a>
+          )}
+        </div>
+        <div>
+          {nextTrack && (
+            <a href={getTrackHref(nextTrack.id)} class="btn btn--primary">
+              {nextTrack.shortLabel}: {nextTrack.title} &rarr;
+            </a>
+          )}
+        </div>
+      </nav>
+    </div>
+  </section>
+</MainLayout>
+
+<style>
+  .track-breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.88rem;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-5);
+  }
+
+  .track-breadcrumb a {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+  }
+
+  .track-breadcrumb a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .track-hero {
+    max-width: 46rem;
+    margin-bottom: var(--space-8);
+  }
+
+  .track-hero__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+
+  .track-hero__title {
+    font-size: clamp(1.85rem, 3.4vw, 2.5rem);
+    font-weight: 800;
+    margin-bottom: var(--space-3);
+  }
+
+  .track-hero__summary {
+    font-size: 1.06rem;
+    line-height: 1.7;
+  }
+
+  .track-pager {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-top: var(--space-10);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+</style>
