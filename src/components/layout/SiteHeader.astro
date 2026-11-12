@@ -1,0 +1,381 @@
+---
+import { withBase } from '../../utils/url';
+import StatusBadge from '../ui/StatusBadge.astro';
+
+const homeHref = withBase('/');
+const overviewHref = withBase('/#overview');
+const roadmapHref = withBase('/#roadmap');
+const featuredHref = withBase('/#featured');
+const plannedHref = withBase('/#planned-sections');
+---
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a href={homeHref} class="brand" aria-label="VisionLab home">
+      <svg
+        class="brand__mark"
+        width="32"
+        height="32"
+        viewBox="0 0 64 64"
+        fill="none"
+        aria-hidden="true"
+      >
+        <rect width="64" height="64" rx="16" fill="currentColor" />
+        <path
+          d="M12 32C17.5 22.5 24.5 18 32 18C39.5 18 46.5 22.5 52 32C46.5 41.5 39.5 46 32 46C24.5 46 17.5 41.5 12 32Z"
+          stroke="#FFFFFF"
+          stroke-width="3.5"
+          stroke-linejoin="round"
+        />
+        <circle cx="32" cy="32" r="7.5" fill="#FFFFFF" />
+        <circle cx="32" cy="32" r="3" fill="currentColor" />
+      </svg>
+      <span class="brand__text">
+        <span class="brand__name">VisionLab</span>
+        <span class="brand__sub">AI &amp; Computer Vision</span>
+      </span>
+    </a>
+
+    <div class="site-header__actions">
+      <nav
+        id="primary-navigation"
+        class="site-nav"
+        aria-label="Primary navigation"
+      >
+        <ul class="site-nav__list">
+          <li>
+            <a href={overviewHref} class="site-nav__link">Overview</a>
+          </li>
+          <li>
+            <a href={roadmapHref} class="site-nav__link">Roadmap</a>
+          </li>
+          <li>
+            <a href={featuredHref} class="site-nav__link">How It Works</a>
+          </li>
+          <li>
+            <a href={plannedHref} class="site-nav__link">
+              <span>Lessons &amp; Demos</span>
+              <StatusBadge variant="amber">Soon</StatusBadge>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <button
+        type="button"
+        id="theme-toggle"
+        class="icon-btn"
+        aria-label="Toggle color theme"
+        aria-pressed="false"
+      >
+        <svg
+          class="theme-icon theme-icon--sun"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2" />
+          <path d="M12 20v2" />
+          <path d="m4.93 4.93 1.41 1.41" />
+          <path d="m17.66 17.66 1.41 1.41" />
+          <path d="M2 12h2" />
+          <path d="M20 12h2" />
+          <path d="m6.34 17.66-1.41 1.41" />
+          <path d="m19.07 4.93-1.41 1.41" />
+        </svg>
+        <svg
+          class="theme-icon theme-icon--moon"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+        </svg>
+        <span class="theme-toggle__label" data-theme-label>Theme</span>
+      </button>
+
+      <button
+        type="button"
+        id="menu-toggle"
+        class="icon-btn menu-toggle"
+        aria-label="Open navigation menu"
+        aria-expanded="false"
+        aria-controls="primary-navigation"
+      >
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <line x1="4" y1="6" x2="20" y2="6" />
+          <line x1="4" y1="12" x2="20" y2="12" />
+          <line x1="4" y1="18" x2="20" y2="18" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<script>
+  const STORAGE_KEY = 'visionlab-theme';
+
+  const getCurrentTheme = (): 'light' | 'dark' =>
+    document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
+
+  const applyTheme = (theme: 'light' | 'dark', persist: boolean) => {
+    document.documentElement.dataset.theme = theme;
+    const toggle = document.getElementById('theme-toggle');
+    const label = toggle?.querySelector('[data-theme-label]');
+    if (toggle) {
+      toggle.setAttribute('aria-pressed', String(theme === 'dark'));
+      toggle.setAttribute(
+        'aria-label',
+        theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'
+      );
+    }
+    if (label) {
+      label.textContent = theme === 'dark' ? 'Dark' : 'Light';
+    }
+    if (persist) {
+      try {
+        window.localStorage.setItem(STORAGE_KEY, theme);
+      } catch {
+        // Ignore storage errors when localStorage is restricted or unavailable.
+      }
+    }
+  };
+
+  applyTheme(getCurrentTheme(), false);
+
+  const themeToggle = document.getElementById('theme-toggle');
+  themeToggle?.addEventListener('click', () => {
+    const next = getCurrentTheme() === 'dark' ? 'light' : 'dark';
+    applyTheme(next, true);
+  });
+
+  const menuToggle = document.getElementById('menu-toggle');
+  const nav = document.getElementById('primary-navigation');
+
+  const closeMenu = () => {
+    if (!menuToggle || !nav) return;
+    nav.classList.remove('is-open');
+    menuToggle.setAttribute('aria-expanded', 'false');
+    menuToggle.setAttribute('aria-label', 'Open navigation menu');
+  };
+
+  menuToggle?.addEventListener('click', () => {
+    if (!nav) return;
+    const isOpen = nav.classList.toggle('is-open');
+    menuToggle.setAttribute('aria-expanded', String(isOpen));
+    menuToggle.setAttribute(
+      'aria-label',
+      isOpen ? 'Close navigation menu' : 'Open navigation menu'
+    );
+  });
+
+  nav?.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', closeMenu);
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      closeMenu();
+    }
+  });
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background-color: color-mix(in srgb, var(--color-bg) 92%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .site-header__inner {
+    min-height: var(--header-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    position: relative;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    text-decoration: none;
+    color: var(--color-text);
+    flex-shrink: 0;
+  }
+
+  .brand__mark {
+    color: var(--color-accent);
+    flex-shrink: 0;
+  }
+
+  .brand__text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+  }
+
+  .brand__name {
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--color-text);
+  }
+
+  .brand__sub {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+  }
+
+  .site-header__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .site-nav {
+    display: none;
+  }
+
+  .site-nav.is-open {
+    display: block;
+    position: absolute;
+    top: calc(100% + 1px);
+    left: var(--space-4);
+    right: var(--space-4);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-3);
+    box-shadow: var(--shadow-md);
+  }
+
+  .site-nav__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .site-nav__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    border-radius: var(--radius-md);
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    transition:
+      background-color var(--transition-fast),
+      color var(--transition-fast);
+  }
+
+  .site-nav__link:hover {
+    background-color: var(--color-surface-elevated);
+    color: var(--color-text);
+  }
+
+  .icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    min-height: 2.35rem;
+    padding: 0.4rem 0.7rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    background-color: var(--color-surface);
+    color: var(--color-text-secondary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background-color var(--transition-fast),
+      color var(--transition-fast),
+      border-color var(--transition-fast);
+  }
+
+  .icon-btn:hover {
+    background-color: var(--color-surface-elevated);
+    color: var(--color-text);
+    border-color: var(--color-border-strong);
+  }
+
+  .theme-toggle__label {
+    display: none;
+  }
+
+  :global([data-theme='dark']) .theme-icon--sun {
+    display: none;
+  }
+
+  :global(:root:not([data-theme='dark'])) .theme-icon--moon {
+    display: none;
+  }
+
+  @media (min-width: 640px) {
+    .theme-toggle__label {
+      display: inline;
+    }
+  }
+
+  @media (min-width: 860px) {
+    .menu-toggle {
+      display: none;
+    }
+
+    .site-nav,
+    .site-nav.is-open {
+      display: block;
+      position: static;
+      background: transparent;
+      border: 0;
+      padding: 0;
+      box-shadow: none;
+      margin-right: var(--space-2);
+    }
+
+    .site-nav__list {
+      flex-direction: row;
+      align-items: center;
+      gap: var(--space-1);
+    }
+
+    .site-nav__link {
+      width: auto;
+      padding: 0.45rem 0.7rem;
+    }
+  }
+</style>
