@@ -34,6 +34,9 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
+let inMemoryProgress: VisionLabProgress = createEmptyProgress();
+let usingInMemoryFallback = false;
+
 /**
  * Validates and normalizes untrusted JSON parsed from localStorage.
  * Returns a clean `VisionLabProgress` object or an empty state if invalid.
@@ -60,17 +63,20 @@ export function parseAndValidateProgress(raw: unknown): VisionLabProgress {
       if (
         typeof score === 'number' &&
         Number.isFinite(score) &&
+        Number.isInteger(score) &&
         typeof total === 'number' &&
         Number.isFinite(total) &&
-        total > 0 &&
+        Number.isInteger(total) &&
+        total >= 1 &&
         score >= 0 &&
         score <= total &&
         typeof updatedAt === 'string' &&
-        updatedAt.length > 0
+        updatedAt.trim().length > 0 &&
+        !Number.isNaN(Date.parse(updatedAt))
       ) {
         quizScores[lessonId] = {
-          score: Math.floor(score),
-          total: Math.floor(total),
+          score,
+          total,
           updatedAt,
         };
       }
@@ -95,6 +101,17 @@ function getStorage(): Storage | null {
   }
 }
 
+function emitProgressChange(progress: VisionLabProgress): void {
+  if (typeof window === 'undefined') {
+    return;
+  }
+  window.dispatchEvent(
+    new CustomEvent<VisionLabProgress>(PROGRESS_CHANGE_EVENT, {
+      detail: progress,
+    })
+  );
+}
+
 export function isLocalStorageAvailable(): boolean {
   const storage = getStorage();
   if (!storage) return false;
@@ -108,41 +125,64 @@ export function isLocalStorageAvailable(): boolean {
   }
 }
 
+export function isPersistenceAvailable(): boolean {
+  return !usingInMemoryFallback && isLocalStorageAvailable();
+}
+
 export function loadProgress(): VisionLabProgress {
+  if (usingInMemoryFallback) {
+    return inMemoryProgress;
+  }
+
   const storage = getStorage();
   if (!storage) {
-    return createEmptyProgress();
+    usingInMemoryFallback = true;
+    return inMemoryProgress;
+  }
+
+  let rawText: string | null = null;
+  try {
+    rawText = storage.getItem(PROGRESS_STORAGE_KEY);
+  } catch {
+    usingInMemoryFallback = true;
+    return inMemoryProgress;
+  }
+
+  if (!rawText) {
+    inMemoryProgress = createEmptyProgress();
+    return inMemoryProgress;
   }
 
   try {
-    const rawText = storage.getItem(PROGRESS_STORAGE_KEY);
-    if (!rawText) {
-      return createEmptyProgress();
-    }
     const parsed: unknown = JSON.parse(rawText);
-    return parseAndValidateProgress(parsed);
+    const validated = parseAndValidateProgress(parsed);
+    inMemoryProgress = validated;
+    return validated;
   } catch {
-    return createEmptyProgress();
+    inMemoryProgress = createEmptyProgress();
+    return inMemoryProgress;
   }
 }
 
 export function saveProgress(next: VisionLabProgress): boolean {
+  const sanitized = parseAndValidateProgress(next);
+  inMemoryProgress = sanitized;
+
   const storage = getStorage();
   if (!storage) {
+    usingInMemoryFallback = true;
+    emitProgressChange(sanitized);
     return false;
   }
 
-  const sanitized = parseAndValidateProgress(next);
-
   try {
     storage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(sanitized));
-    window.dispatchEvent(
-      new CustomEvent<VisionLabProgress>(PROGRESS_CHANGE_EVENT, {
-        detail: sanitized,
-      })
-    );
+    usingInMemoryFallback = false;
+    emitProgressChange(sanitized);
     return true;
   } catch {
+    usingInMemoryFallback = true;
+    emitProgressChange(sanitized);
     return false;
   }
 }
@@ -194,8 +234,12 @@ export function saveQuizScore(
   total: number
 ): { progress: VisionLabProgress; persisted: boolean } {
   const current = loadProgress();
-  const safeTotal = Math.max(1, Math.floor(total));
-  const safeScore = Math.min(safeTotal, Math.max(0, Math.floor(score)));
+  const safeTotal = Number.isFinite(total)
+    ? Math.max(1, Math.floor(total))
+    : 1;
+  const safeScore = Number.isFinite(score)
+    ? Math.min(safeTotal, Math.max(0, Math.floor(score)))
+    : 0;
 
   const next: VisionLabProgress = {
     version: 1,
@@ -244,6 +288,7 @@ export function subscribeProgress(
 
   const handleStorage = (event: StorageEvent) => {
     if (event.key === PROGRESS_STORAGE_KEY || event.key === null) {
+      usingInMemoryFallback = false;
       listener(loadProgress());
     }
   };

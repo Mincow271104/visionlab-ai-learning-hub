@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   isLessonCompleted,
+  isPersistenceAvailable,
   loadProgress,
   subscribeProgress,
   toggleLessonCompleted,
@@ -20,15 +21,17 @@ export default function LessonCompletionButton({
 
   useEffect(() => {
     setCompleted(isLessonCompleted(loadProgress(), lessonId));
+    setStorageWarning(!isPersistenceAvailable());
     return subscribeProgress((progress) => {
       setCompleted(isLessonCompleted(progress, lessonId));
+      setStorageWarning(!isPersistenceAvailable());
     });
   }, [lessonId]);
 
   const handleToggle = () => {
     const result = toggleLessonCompleted(lessonId);
     setCompleted(result.completed);
-    setStorageWarning(!result.persisted);
+    setStorageWarning(!result.persisted || !isPersistenceAvailable());
   };
 
   return (
@@ -49,10 +52,12 @@ export default function LessonCompletionButton({
               ? `✓ Completed: ${lessonTitle}`
               : `Finished reading "${lessonTitle}"?`}
           </p>
-          <p style={{ fontSize: '0.86rem', color: 'var(--color-text-muted)' }}>
-            Progress is saved locally on this browser and device (not synced
-            across devices).
-          </p>
+          {!storageWarning && (
+            <p style={{ fontSize: '0.86rem', color: 'var(--color-text-muted)' }}>
+              Progress is saved locally on this browser and device (not synced
+              across devices).
+            </p>
+          )}
         </div>
 
         <button
@@ -67,8 +72,10 @@ export default function LessonCompletionButton({
 
       {storageWarning && (
         <p className="vl-notice" role="status" style={{ marginTop: '0.75rem' }}>
-          Browser local storage is unavailable or blocked, so completion state
-          cannot persist after closing this page.
+          <strong>Session-only fallback:</strong> Browser local storage is
+          unavailable or blocked. Your completion update works during this
+          session, but it will not persist after reloading or closing the
+          browser.
         </p>
       )}
     </div>

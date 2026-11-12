@@ -1,5 +1,5 @@
-import { useId, useState } from 'react';
-import { saveQuizScore } from '../../utils/progress';
+import { useEffect, useId, useState } from 'react';
+import { isPersistenceAvailable, saveQuizScore } from '../../utils/progress';
 
 export interface KnowledgeQuestion {
   readonly question: string;
@@ -20,6 +20,10 @@ export default function KnowledgeCheck({ lessonId, questions }: Props) {
   const [submittedQuestions, setSubmittedQuestions] = useState<Record<number, boolean>>({});
   const [showSummary, setShowSummary] = useState(false);
   const [storageWarning, setStorageWarning] = useState(false);
+
+  useEffect(() => {
+    setStorageWarning(!isPersistenceAvailable());
+  }, []);
 
   if (questions.length === 0) {
     return null;
@@ -113,7 +117,9 @@ export default function KnowledgeCheck({ lessonId, questions }: Props) {
           </h3>
           <p className="vl-widget__goal">
             Answer one question at a time and submit to see the explanation.
-            Scores are saved locally in your browser.
+            {storageWarning
+              ? ' Browser local storage is unavailable, so scores apply only to this session.'
+              : ' Scores are saved locally in your browser.'}
           </p>
         </div>
         <span className="vl-badge vl-badge--accent">

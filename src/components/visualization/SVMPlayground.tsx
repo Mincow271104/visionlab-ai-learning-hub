@@ -238,7 +238,7 @@ export default function SVMPlayground() {
       setShowKernelIllustration(false);
     } else {
       setPoints(XOR_PRESET);
-      setAngleDeg(90);
+      setAngleDeg(65);
       setOffset(0);
       setMarginHalfWidth(0.9);
       setShowKernelIllustration(false);
@@ -395,31 +395,125 @@ export default function SVMPlayground() {
               Feature x₂
             </text>
 
-            {/* Optional conceptual kernel curve illustration for XOR */}
+            {/* Optional explicit feature-mapping boundary illustration for XOR: z = x1 * x2 = 0 => axes x1 = 0 and x2 = 0 */}
             {preset === 'xor' && showKernelIllustration && (
-              <g aria-label="Conceptual nonlinear kernel boundary illustration">
-                <path
-                  d={`M ${toSvgX(-4.6)} ${toSvgY(-0.25)} Q ${toSvgX(-0.3)} ${toSvgY(-0.3)} ${toSvgX(-0.25)} ${toSvgY(-4.6)}`}
-                  fill="none"
-                  stroke="#9333ea"
-                  strokeWidth={2.5}
-                  strokeDasharray="6 4"
+              <g aria-label="Explicit feature-mapping boundary z equals x1 times x2 equals 0 shown as the axes x1 equals 0 and x2 equals 0">
+                {/* Subtle quadrant sign regions */}
+                <rect
+                  x={SVG_PADDING}
+                  y={SVG_PADDING}
+                  width={PLOT_SPAN / 2}
+                  height={PLOT_SPAN / 2}
+                  fill="#2563eb"
+                  opacity={0.07}
                 />
-                <path
-                  d={`M ${toSvgX(4.6)} ${toSvgY(0.25)} Q ${toSvgX(0.3)} ${toSvgY(0.3)} ${toSvgX(0.25)} ${toSvgY(4.6)}`}
-                  fill="none"
+                <rect
+                  x={toSvgX(0)}
+                  y={toSvgY(0)}
+                  width={PLOT_SPAN / 2}
+                  height={PLOT_SPAN / 2}
+                  fill="#2563eb"
+                  opacity={0.07}
+                />
+                <rect
+                  x={toSvgX(0)}
+                  y={SVG_PADDING}
+                  width={PLOT_SPAN / 2}
+                  height={PLOT_SPAN / 2}
+                  fill="#0f766e"
+                  opacity={0.07}
+                />
+                <rect
+                  x={SVG_PADDING}
+                  y={toSvgY(0)}
+                  width={PLOT_SPAN / 2}
+                  height={PLOT_SPAN / 2}
+                  fill="#0f766e"
+                  opacity={0.07}
+                />
+
+                {/* Preimage of z = x1 * x2 = 0 in 2D: union of x1 = 0 and x2 = 0 */}
+                <line
+                  x1={toSvgX(0)}
+                  y1={SVG_PADDING}
+                  x2={toSvgX(0)}
+                  y2={SVG_SIZE - SVG_PADDING}
                   stroke="#9333ea"
-                  strokeWidth={2.5}
-                  strokeDasharray="6 4"
+                  strokeWidth={3}
+                  strokeDasharray="7 4"
+                />
+                <line
+                  x1={SVG_PADDING}
+                  y1={toSvgY(0)}
+                  x2={SVG_SIZE - SVG_PADDING}
+                  y2={toSvgY(0)}
+                  stroke="#9333ea"
+                  strokeWidth={3}
+                  strokeDasharray="7 4"
+                />
+
+                {/* Quadrant sign annotations */}
+                <text
+                  x={toSvgX(-2.5)}
+                  y={toSvgY(4.2)}
+                  textAnchor="middle"
+                  fontSize="10.5"
+                  fontWeight="600"
+                  fill="#1d4ed8"
+                >
+                  z = x₁·x₂ &lt; 0 (A)
+                </text>
+                <text
+                  x={toSvgX(2.5)}
+                  y={toSvgY(-4.35)}
+                  textAnchor="middle"
+                  fontSize="10.5"
+                  fontWeight="600"
+                  fill="#1d4ed8"
+                >
+                  z = x₁·x₂ &lt; 0 (A)
+                </text>
+                <text
+                  x={toSvgX(2.5)}
+                  y={toSvgY(4.2)}
+                  textAnchor="middle"
+                  fontSize="10.5"
+                  fontWeight="600"
+                  fill="#0f766e"
+                >
+                  z = x₁·x₂ &gt; 0 (B)
+                </text>
+                <text
+                  x={toSvgX(-2.5)}
+                  y={toSvgY(-4.35)}
+                  textAnchor="middle"
+                  fontSize="10.5"
+                  fontWeight="600"
+                  fill="#0f766e"
+                >
+                  z = x₁·x₂ &gt; 0 (B)
+                </text>
+
+                {/* Direct axis equation labels */}
+                <rect
+                  x={toSvgX(0) + 6}
+                  y={SVG_PADDING + 24}
+                  width={158}
+                  height={20}
+                  rx={4}
+                  fill="var(--color-surface)"
+                  fillOpacity={0.92}
+                  stroke="#9333ea"
+                  strokeWidth={1}
                 />
                 <text
-                  x={SVG_PADDING + 8}
-                  y={SVG_PADDING + 18}
-                  fontSize="11"
+                  x={toSvgX(0) + 12}
+                  y={SVG_PADDING + 38}
+                  fontSize="10.5"
                   fontWeight="700"
                   fill="#9333ea"
                 >
-                  Conceptual kernel boundary (x₁ · x₂ = 0)
+                  z = x₁·x₂ = 0 (axes x₁=0, x₂=0)
                 </text>
               </g>
             )}
@@ -434,7 +528,7 @@ export default function SVMPlayground() {
                 stroke="var(--color-accent)"
                 strokeWidth={1.5}
                 strokeDasharray="5 5"
-                opacity={0.75}
+                opacity={preset === 'xor' && showKernelIllustration ? 0.3 : 0.75}
               />
             )}
             {negMarginSegment && (
@@ -446,7 +540,7 @@ export default function SVMPlayground() {
                 stroke="var(--color-teal)"
                 strokeWidth={1.5}
                 strokeDasharray="5 5"
-                opacity={0.75}
+                opacity={preset === 'xor' && showKernelIllustration ? 0.3 : 0.75}
               />
             )}
 
@@ -459,6 +553,7 @@ export default function SVMPlayground() {
                 y2={toSvgY(boundarySegment.y2)}
                 stroke="var(--color-text)"
                 strokeWidth={2.5}
+                opacity={preset === 'xor' && showKernelIllustration ? 0.45 : 1}
               />
             )}
 
@@ -539,8 +634,13 @@ export default function SVMPlayground() {
           >
             <span>● Blue circle: Class A (+ side)</span>
             <span>◆ Teal diamond: Class B (− side)</span>
-            <span>━━ Decision boundary</span>
-            <span>┅ Margin band (±m)</span>
+            <span>━━ Manual linear boundary (from sliders)</span>
+            <span>┅ Manual margin band (±m)</span>
+            {preset === 'xor' && showKernelIllustration && (
+              <span style={{ color: '#9333ea', fontWeight: 600 }}>
+                ┅ Purple dashed axes (x₁ = 0, x₂ = 0): Feature-map boundary z = x₁·x₂ = 0
+              </span>
+            )}
             <span>◯ Amber ring: Closest-to-boundary points (support-vector intuition)</span>
           </div>
         </div>
@@ -705,16 +805,36 @@ export default function SVMPlayground() {
           {preset === 'xor' && (
             <div className="vl-notice vl-notice--info">
               <p style={{ marginBottom: '0.5rem' }}>
-                <strong>Why no straight line separates XOR:</strong> Class A sits
-                in opposite diagonal quadrants (top-left &amp; bottom-right)
-                while Class B sits in the other two. In the{' '}
-                <strong>original 2D feature space</strong>{' '}
-                <span className="vl-mono">(x₁, x₂)</span>, any single straight
-                line mixes the two classes. A kernel computes inner products in
-                a <strong>kernel-induced feature space</strong> (conceptually
-                like adding <span className="vl-mono">x₁ · x₂</span>) without
-                explicitly building high-dimensional coordinates, yielding a
-                curved decision boundary back in 2D.
+                <strong>Why no single line separates XOR in 2D:</strong> Class A
+                occupies the top-left (<span className="vl-mono">x₁ &lt; 0, x₂ &gt; 0</span>)
+                and bottom-right (<span className="vl-mono">x₁ &gt; 0, x₂ &lt; 0</span>){' '}
+                quadrants, while Class B occupies the top-right and bottom-left
+                quadrants. No single straight line in{' '}
+                <span className="vl-mono">(x₁, x₂)</span> can separate opposite
+                quadrant pairs cleanly.
+              </p>
+              <p style={{ marginBottom: '0.5rem' }}>
+                <strong>Simple feature-mapping intuition (not a trained kernel SVM):</strong>{' '}
+                If we explicitly introduce one new feature{' '}
+                <span className="vl-mono">z = x₁ · x₂</span>, then{' '}
+                <span className="vl-mono">z &lt; 0</span> for Class A and{' '}
+                <span className="vl-mono">z &gt; 0</span> for Class B. In the
+                original 2D plane, the preimage of{' '}
+                <span className="vl-mono">z = 0</span> is the union of the two
+                coordinate axes: <span className="vl-mono">x₁ = 0</span> and{' '}
+                <span className="vl-mono">x₂ = 0</span>.
+              </p>
+              <p style={{ marginBottom: '0.65rem', fontSize: '0.84rem' }}>
+                <strong>Explicit feature vs. kernel trick:</strong> Adding{' '}
+                <span className="vl-mono">z = x₁ · x₂</span> manually builds an
+                extra coordinate. By contrast, the{' '}
+                <strong>kernel trick</strong> lets a real SVM evaluate inner
+                products <span className="vl-mono">K(u, v)</span> in an{' '}
+                <em>implicit</em> feature space without computing every
+                high-dimensional coordinate explicitly. This overlay illustrates
+                that simple <span className="vl-mono">z = x₁ · x₂</span> mapping
+                conceptually—it is <strong>not</strong> an implementation of a
+                trained kernel SVM solver.
               </p>
               <button
                 type="button"
@@ -723,8 +843,8 @@ export default function SVMPlayground() {
                 onClick={() => setShowKernelIllustration((prev) => !prev)}
               >
                 {showKernelIllustration
-                  ? 'Hide Conceptual Kernel Illustration'
-                  : 'Show Conceptual Kernel Illustration'}
+                  ? 'Hide Feature-Map Overlay (x₁ = 0, x₂ = 0)'
+                  : 'Show Feature-Map Intuition (z = x₁·x₂ = 0)'}
               </button>
             </div>
           )}

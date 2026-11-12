@@ -261,9 +261,9 @@ People often use "AI," "Machine Learning," and "Deep Learning" as if they were c
         'If exact rules are short and unchanging—like calculating sales tax—traditional rule-based code is simpler and more reliable. If patterns vary widely—like recognizing handwritten digits—machine learning is a better fit.',
     },
     {
-      title: 'Stay within Narrow AI boundaries',
+      title: 'Distinguish Narrow AI from general human-level intelligence',
       detail:
-        'Modern deployed systems are examples of Narrow AI (also called weak AI): they handle one bounded task well, rather than possessing broad human-like reasoning across unrelated domains.',
+        'Deployed AI systems—from single-task classifiers to versatile multi-task foundation models that write, translate, and summarize—are still classified as Narrow AI (weak AI): they operate from learned statistical patterns rather than possessing robust, grounded human-level general intelligence.',
     },
     {
       title: 'Account for uncertainty',
@@ -284,12 +284,14 @@ Consider **airport baggage screening or medical imaging assistance** versus **a 
 - A **tax calculator** follows explicit legal rules written by programmers. Every input produces one exact, deterministic output.
 - A **computer vision quality-inspection camera** on a factory line checks manufactured parts for tiny scratches or missing components. Lighting, angles, and surface textures vary too much for hand-written pixel rules, so engineers train a Narrow AI vision model on labeled photos of good and defective parts.
 
-Even then, that factory vision model cannot summarize an email or drive a car—its capability is strictly narrow.
+Even then, that specialized factory vision model only handles inspection photos—it cannot summarize an email or plan a route. By contrast, modern **multi-task** models (such as Large Language Models) can handle many varied text or visual prompts within a single system, yet they still rely on learned statistical patterns rather than robust general human-level understanding.
 
 ## 8. Common Misconceptions
 
 - **Misconception:** AI systems understand the world the same way humans do.  
   **Reality:** Modern AI systems detect statistical patterns in numerical inputs. They have no conscious awareness, lived experience, or common-sense grasp outside their training setup.
+- **Misconception:** Any model that performs many different tasks (like chatting, coding, and translating) has achieved human-level general intelligence.  
+  **Reality:** Broad multi-task capability is different from robust general human-level intelligence. Even versatile modern AI systems can hallucinate, struggle with physical common sense, or fail when situations shift far beyond their training patterns.
 - **Misconception:** "AI" and "Deep Learning" mean the exact same thing.  
   **Reality:** Deep Learning is a specialized subset of Machine Learning using multi-layered neural networks, and Machine Learning is itself a subset of the broader AI field.
 - **Misconception:** AI is always better than traditional rule-based software.  
@@ -331,13 +333,13 @@ Even then, that factory vision model cannot summarize an email or drive a car—
       question: 'Why are today’s deployed AI systems referred to as "Narrow AI"?',
       options: [
         'Because they only run on small mobile phones',
-        'Because they specialize in specific bounded tasks rather than general human-level reasoning',
+        'Because they operate within learned pattern boundaries rather than possessing robust general human-level intelligence',
         'Because they can only process one word per minute',
         'Because they never make mistakes',
       ],
       correctIndex: 1,
       explanation:
-        'Narrow AI systems perform well on a defined task (like spam filtering or object recognition) but cannot transfer that capability on their own to unrelated tasks or common-sense reasoning.',
+        'Modern AI spans both specialized single-task models and broad multi-task models (which can write, translate, or code across topics). Even multi-task systems are still Narrow AI because they rely on learned statistical patterns rather than possessing robust, grounded human-level general intelligence.',
     },
   ]}
 />
@@ -347,7 +349,7 @@ Even then, that factory vision model cannot summarize an email or drive a car—
 - **Artificial Intelligence** is the broad goal of building systems capable of perception, pattern recognition, or decision support.
 - **Rule-based software** excels when rules are clear and fixed; **Machine Learning** shines when patterns are too complex to write manually.
 - **Deep Learning** is a layered neural-network subset of Machine Learning.
-- Practical systems today are **Narrow AI**: powerful within a defined scope, yet limited by their training data and lack of general understanding.
+- Practical systems today—even versatile multi-task models—are **Narrow AI**: capable within learned pattern boundaries, yet distinct from robust general human-level intelligence.
 
 ## 11. Related Lessons
 

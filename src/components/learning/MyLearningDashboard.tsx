@@ -3,7 +3,7 @@ import type { LessonSummary } from '../../utils/lessons';
 import {
   clearProgress,
   createEmptyProgress,
-  isLocalStorageAvailable,
+  isPersistenceAvailable,
   loadProgress,
   subscribeProgress,
   toggleLessonCompleted,
@@ -31,10 +31,11 @@ export default function MyLearningDashboard({
   const [confirmClear, setConfirmClear] = useState(false);
 
   useEffect(() => {
-    setStorageAvailable(isLocalStorageAvailable());
+    setStorageAvailable(isPersistenceAvailable());
     setProgress(loadProgress());
     return subscribeProgress((next) => {
       setProgress(next);
+      setStorageAvailable(isPersistenceAvailable());
     });
   }, []);
 
@@ -63,34 +64,47 @@ export default function MyLearningDashboard({
       } => Boolean(item.record)
     );
 
+  const allCompleted = totalLessons > 0 && completedCount === totalLessons;
   const nextLesson =
-    lessons.find((lesson) => !completedSet.has(lesson.id)) ?? lessons[0];
+    lessons.find((lesson) => !completedSet.has(lesson.id)) ?? null;
 
   const hasStarted = completedCount > 0 || savedQuizEntries.length > 0;
+
+  const handleToggleLesson = (lessonId: string) => {
+    const { progress: next, persisted } = toggleLessonCompleted(lessonId);
+    setProgress(next);
+    setStorageAvailable(persisted && isPersistenceAvailable());
+  };
 
   const handleResetProgress = () => {
     if (!confirmClear) {
       setConfirmClear(true);
       return;
     }
-    clearProgress();
+    const { progress: next, persisted } = clearProgress();
+    setProgress(next);
+    setStorageAvailable(persisted && isPersistenceAvailable());
     setConfirmClear(false);
   };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      {!storageAvailable && (
+      {storageAvailable ? (
+        <div className="vl-notice vl-notice--info">
+          Your completed lessons and quiz scores are stored{' '}
+          <strong>only in this browser on this device</strong>. VisionLab
+          collects no personal information and does not synchronize across
+          devices.
+        </div>
+      ) : (
         <div className="vl-notice" role="status">
-          Browser local storage appears unavailable or restricted in this
-          session. Progress and quiz scores cannot be saved across reloads.
+          <strong>Session-only fallback active:</strong> Browser local storage
+          is unavailable, blocked, or failed to save. Your progress still
+          updates live in this session, but it{' '}
+          <strong>will not persist after reloading or closing the browser</strong>
+          .
         </div>
       )}
-
-      <div className="vl-notice vl-notice--info">
-        Your completed lessons and quiz scores are stored{' '}
-        <strong>only in this browser on this device</strong>. VisionLab collects
-        no personal information and does not synchronize across devices.
-      </div>
 
       {/* Overview summary */}
       <section className="vl-widget" aria-labelledby="my-learning-overview">
@@ -197,20 +211,50 @@ export default function MyLearningDashboard({
           </div>
         )}
 
+        {allCompleted && (
+          <div
+            className="vl-notice vl-notice--info"
+            role="status"
+            style={{ marginBottom: '1rem' }}
+          >
+            <p style={{ fontWeight: 700, color: 'var(--color-text)' }}>
+              All published lessons completed!
+            </p>
+            <p style={{ fontSize: '0.92rem', marginTop: '0.25rem' }}>
+              You have completed all {totalLessons} currently published VisionLab
+              lessons across the 5 tracks. Explore any lesson to review or check
+              upcoming topics on the roadmap.
+            </p>
+          </div>
+        )}
+
         <div className="vl-btn-row">
-          {nextLesson && (
-            <a href={nextLesson.href} className="vl-btn vl-btn--primary">
-              {hasStarted
-                ? `Continue: ${nextLesson.title}`
-                : `Start Learning: ${nextLesson.title}`}
-            </a>
+          {allCompleted ? (
+            <>
+              <a href={exploreHref} className="vl-btn vl-btn--primary">
+                Explore All Lessons
+              </a>
+              <a href={roadmapHref} className="vl-btn">
+                View Full Roadmap
+              </a>
+            </>
+          ) : (
+            <>
+              {nextLesson && (
+                <a href={nextLesson.href} className="vl-btn vl-btn--primary">
+                  {hasStarted
+                    ? `Continue: ${nextLesson.title}`
+                    : `Start Learning: ${nextLesson.title}`}
+                </a>
+              )}
+              <a href={roadmapHref} className="vl-btn">
+                View Full Roadmap
+              </a>
+              <a href={exploreHref} className="vl-btn">
+                Explore All Lessons
+              </a>
+            </>
           )}
-          <a href={roadmapHref} className="vl-btn">
-            View Full Roadmap
-          </a>
-          <a href={exploreHref} className="vl-btn">
-            Explore All Lessons
-          </a>
         </div>
       </section>
 
@@ -295,7 +339,7 @@ export default function MyLearningDashboard({
                             fontSize: '0.78rem',
                           }}
                           aria-pressed={done}
-                          onClick={() => toggleLessonCompleted(lesson.id)}
+                          onClick={() => handleToggleLesson(lesson.id)}
                         >
                           {done ? '✓ Done' : 'Mark done'}
                         </button>
@@ -354,7 +398,10 @@ export default function MyLearningDashboard({
                 <div className="vl-lesson-card__meta">
                   <span className="vl-badge vl-badge--teal">
                     Score: {record.score} / {record.total} (
-                    {Math.round((record.score / record.total) * 100)}%)
+                    {record.total >= 1
+                      ? Math.round((record.score / record.total) * 100)
+                      : 0}
+                    %)
                   </span>
                 </div>
                 <h3 className="vl-lesson-card__title">
