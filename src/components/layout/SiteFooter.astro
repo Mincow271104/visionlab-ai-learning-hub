@@ -1,0 +1,135 @@
+---
+import { withBase } from '../../utils/url';
+
+const currentYear = new Date().getFullYear();
+const overviewHref = withBase('/#overview');
+const roadmapHref = withBase('/#roadmap');
+const featuredHref = withBase('/#featured');
+const plannedHref = withBase('/#planned-sections');
+---
+
+<footer class="site-footer">
+  <div class="container site-footer__inner">
+    <div class="site-footer__brand">
+      <p class="site-footer__title">VisionLab — AI &amp; Computer Vision Learning Hub</p>
+      <p class="site-footer__tagline">See It. Try It. Understand It.</p>
+      <p class="site-footer__note">
+        Built as a static learning site with Astro. Future learning progress is
+        designed to stay local in your browser with no accounts or tracking.
+      </p>
+    </div>
+
+    <div class="site-footer__links">
+      <div>
+        <h2 class="site-footer__heading">On This Page</h2>
+        <ul>
+          <li><a href={overviewHref}>Overview</a></li>
+          <li><a href={roadmapHref}>Learning Roadmap</a></li>
+          <li><a href={featuredHref}>Featured Learning</a></li>
+          <li><a href={plannedHref}>Planned Sections</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="site-footer__heading">Project</h2>
+        <ul>
+          <li>
+            <a
+              href="https://github.com/Mincow271104/visionlab-ai-learning-hub"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              GitHub Repository
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="container site-footer__bottom">
+    <p>&copy; {currentYear} VisionLab. Package 1 Project Foundation.</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--color-border);
+    background-color: var(--color-bg-subtle);
+    padding-block: var(--space-10) var(--space-6);
+  }
+
+  .site-footer__inner {
+    display: grid;
+    gap: var(--space-8);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 768px) {
+    .site-footer__inner {
+      grid-template-columns: 1.5fr 1fr;
+      align-items: start;
+    }
+  }
+
+  .site-footer__title {
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: var(--space-1);
+  }
+
+  .site-footer__tagline {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    margin-bottom: var(--space-3);
+  }
+
+  .site-footer__note {
+    font-size: 0.88rem;
+    max-width: 34rem;
+    color: var(--color-text-muted);
+  }
+
+  .site-footer__links {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-6);
+  }
+
+  .site-footer__heading {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-3);
+  }
+
+  .site-footer__links ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    font-size: 0.9rem;
+  }
+
+  .site-footer__links a {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+  }
+
+  .site-footer__links a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .site-footer__bottom {
+    margin-top: var(--space-8);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+    font-size: 0.84rem;
+    color: var(--color-text-muted);
+  }
+</style>

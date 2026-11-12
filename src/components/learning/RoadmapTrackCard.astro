@@ -1,0 +1,112 @@
+---
+import type { LearningTrackInfo } from '../../utils/tracks';
+import StatusBadge from '../ui/StatusBadge.astro';
+
+interface Props {
+  track: LearningTrackInfo;
+}
+
+const { track } = Astro.props;
+
+const statusLabels: Record<LearningTrackInfo['status'], string> = {
+  planned: 'Planned · Coming soon',
+  'in-progress': 'In progress',
+  available: 'Available',
+};
+---
+
+<article class="track-card" aria-labelledby={`track-title-${track.id}`}>
+  <div class="track-card__top">
+    <span class="track-card__stage">{track.shortLabel}</span>
+    <StatusBadge variant={track.status === 'available' ? 'teal' : 'amber'}>
+      {statusLabels[track.status]}
+    </StatusBadge>
+  </div>
+
+  <h3 id={`track-title-${track.id}`} class="track-card__title">
+    {track.title}
+  </h3>
+
+  <p class="track-card__summary">{track.summary}</p>
+
+  <div class="track-card__topics">
+    <p class="track-card__topics-label">Planned topics</p>
+    <ul class="track-card__topics-list">
+      {track.sampleTopics.map((topic) => (
+        <li>{topic}</li>
+      ))}
+    </ul>
+  </div>
+</article>
+
+<style>
+  .track-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xs);
+    transition:
+      border-color var(--transition-fast),
+      box-shadow var(--transition-fast);
+  }
+
+  .track-card:hover {
+    border-color: var(--color-border-strong);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .track-card__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+  }
+
+  .track-card__stage {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .track-card__title {
+    font-size: 1.18rem;
+    font-weight: 700;
+  }
+
+  .track-card__summary {
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .track-card__topics {
+    margin-top: auto;
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .track-card__topics-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-2);
+  }
+
+  .track-card__topics-list {
+    margin: 0;
+    padding-left: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    font-size: 0.88rem;
+    color: var(--color-text-secondary);
+  }
+</style>

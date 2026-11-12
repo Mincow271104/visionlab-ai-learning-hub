@@ -1,0 +1,588 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import RoadmapTrackCard from '../components/learning/RoadmapTrackCard.astro';
+import SectionHeading from '../components/ui/SectionHeading.astro';
+import StatusBadge from '../components/ui/StatusBadge.astro';
+import { LEARNING_TRACKS } from '../utils/tracks';
+
+const featuredPrinciples = [
+  {
+    badge: 'Guided Learning',
+    title: 'A Clear, Staged Sequence',
+    description:
+      'Start from everyday intuition in AI Fundamentals and progress step by step toward Machine Learning, Deep Learning, Computer Vision, and Generative AI.',
+    status: 'Roadmap active · Lessons planned',
+  },
+  {
+    badge: 'Explore Freely',
+    title: 'Self-Contained Lessons & Search',
+    description:
+      'Prefer jumping straight to a specific concept? Upcoming lessons are authored independently so you can browse and filter by topic, difficulty, or tag.',
+    status: 'Searchable library · Coming soon',
+  },
+  {
+    badge: 'Interactive Intuition',
+    title: 'Visual Explanations Before Math',
+    description:
+      'Every topic introduces concrete analogies and labeled diagrams first, followed by bounded interactive demonstrations where manipulation clarifies the idea.',
+    status: 'Sandboxes · Coming in Package 2+',
+  },
+] as const;
+
+const plannedSections = [
+  {
+    name: 'Project Shell & Learning Roadmap',
+    status: 'Available now',
+    variant: 'teal' as const,
+    detail:
+      'Static Astro foundation, GitHub Pages base-path routing, theme support, and the 5-track curriculum overview.',
+  },
+  {
+    name: 'Core Lessons Library',
+    status: 'Coming soon',
+    variant: 'amber' as const,
+    detail:
+      'Beginner-friendly MDX lessons authored against a shared 11-section teaching template with verified schema metadata.',
+  },
+  {
+    name: 'Interactive Visualizers',
+    status: 'Coming soon',
+    variant: 'amber' as const,
+    detail:
+      'Focused React demonstrations (including SVM boundaries, neural network layers, and image convolutions) added alongside their lessons.',
+  },
+  {
+    name: 'Search & Local Browser Progress',
+    status: 'Coming soon',
+    variant: 'amber' as const,
+    detail:
+      'Client-side filtering by title, description, and tags, plus optional browser-only progress notes with no sign-in required.',
+  },
+] as const;
+---
+
+<MainLayout
+  title="VisionLab — AI & Computer Vision Learning Hub"
+  description="See It. Try It. Understand It. A beginner-friendly learning hub for artificial intelligence and computer vision."
+>
+  <section id="overview" class="hero">
+    <div class="container hero__grid">
+      <div class="hero__content">
+        <div class="hero__badges">
+          <StatusBadge variant="accent">Package 1 · Project Foundation</StatusBadge>
+          <StatusBadge variant="neutral">Beginner-Friendly</StatusBadge>
+        </div>
+
+        <h1 class="hero__title">
+          VisionLab
+          <span class="hero__tagline">See It. Try It. Understand It.</span>
+        </h1>
+
+        <p class="hero__intro">
+          Artificial intelligence and computer vision do not have to begin with
+          dense equations or prior coding experience. VisionLab is a structured
+          learning hub designed to help curious beginners build accurate mental
+          models through visual intuition, clear analogies, and hands-on
+          exploration.
+        </p>
+
+        <div class="hero__actions">
+          <a href="#roadmap" class="btn btn--primary">Explore Learning Roadmap</a>
+          <a href="#featured" class="btn btn--secondary">How VisionLab Teaches</a>
+        </div>
+      </div>
+
+      <figure class="hero__visual" aria-labelledby="hero-diagram-caption">
+        <svg
+          class="hero__svg"
+          viewBox="0 0 460 320"
+          fill="none"
+          role="img"
+          aria-labelledby="hero-svg-title hero-svg-desc"
+        >
+          <title id="hero-svg-title">
+            VisionLab Three-Step Learning Loop
+          </title>
+          <desc id="hero-svg-desc">
+            A conceptual diagram showing three connected stages: See It (labeled
+            diagrams), Try It (interactive controls), and Understand It (clear
+            mental models).
+          </desc>
+
+          <rect
+            x="8"
+            y="8"
+            width="444"
+            height="304"
+            rx="20"
+            class="diagram-frame"
+          />
+
+          <!-- Connection arrows -->
+          <path
+            d="M150 118 H172"
+            class="diagram-connector"
+            stroke-width="2.5"
+            stroke-linecap="round"
+          />
+          <path
+            d="M167 112 L175 118 L167 124"
+            class="diagram-connector"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M308 118 H330"
+            class="diagram-connector"
+            stroke-width="2.5"
+            stroke-linecap="round"
+          />
+          <path
+            d="M325 112 L333 118 L325 124"
+            class="diagram-connector"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+
+          <!-- Step 1: See It -->
+          <g>
+            <rect
+              x="28"
+              y="48"
+              width="120"
+              height="148"
+              rx="14"
+              class="diagram-card"
+            />
+            <circle cx="88" cy="88" r="22" class="diagram-pill-blue" />
+            <path
+              d="M72 88C76.5 80 82 76 88 76C94 76 99.5 80 104 88C99.5 96 94 100 88 100C82 100 76.5 96 72 88Z"
+              class="diagram-stroke-blue"
+              stroke-width="2.2"
+            />
+            <circle cx="88" cy="88" r="4.5" class="diagram-dot-blue" />
+            <text x="88" y="136" text-anchor="middle" class="diagram-label">
+              1. See It
+            </text>
+            <text x="88" y="156" text-anchor="middle" class="diagram-sublabel">
+              Visual intuition
+            </text>
+            <text x="88" y="172" text-anchor="middle" class="diagram-sublabel">
+              before formulas
+            </text>
+          </g>
+
+          <!-- Step 2: Try It -->
+          <g>
+            <rect
+              x="178"
+              y="48"
+              width="128"
+              height="148"
+              rx="14"
+              class="diagram-card diagram-card--highlight"
+            />
+            <circle cx="242" cy="88" r="22" class="diagram-pill-blue" />
+            <line
+              x1="227"
+              y1="82"
+              x2="257"
+              y2="82"
+              class="diagram-stroke-blue"
+              stroke-width="2.2"
+              stroke-linecap="round"
+            />
+            <circle cx="248" cy="82" r="4" class="diagram-dot-blue" />
+            <line
+              x1="227"
+              y1="94"
+              x2="257"
+              y2="94"
+              class="diagram-stroke-blue"
+              stroke-width="2.2"
+              stroke-linecap="round"
+            />
+            <circle cx="235" cy="94" r="4" class="diagram-dot-blue" />
+            <text x="242" y="136" text-anchor="middle" class="diagram-label">
+              2. Try It
+            </text>
+            <text x="242" y="156" text-anchor="middle" class="diagram-sublabel">
+              Adjust inputs &amp;
+            </text>
+            <text x="242" y="172" text-anchor="middle" class="diagram-sublabel">
+              observe behavior
+            </text>
+          </g>
+
+          <!-- Step 3: Understand It -->
+          <g>
+            <rect
+              x="334"
+              y="48"
+              width="102"
+              height="148"
+              rx="14"
+              class="diagram-card"
+            />
+            <circle cx="385" cy="88" r="22" class="diagram-pill-teal" />
+            <path
+              d="M375 88 L382 95 L396 81"
+              class="diagram-stroke-teal"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <text x="385" y="136" text-anchor="middle" class="diagram-label">
+              3. Understand
+            </text>
+            <text x="385" y="156" text-anchor="middle" class="diagram-sublabel">
+              Connect ideas
+            </text>
+            <text x="385" y="172" text-anchor="middle" class="diagram-sublabel">
+              &amp; check limits
+            </text>
+          </g>
+
+          <!-- Bottom summary bar -->
+          <rect
+            x="28"
+            y="222"
+            width="408"
+            height="62"
+            rx="12"
+            class="diagram-footer-bar"
+          />
+          <text x="48" y="248" class="diagram-bar-title">
+            Hybrid Learning Platform
+          </text>
+          <text x="48" y="268" class="diagram-sublabel">
+            Follow the 5-track guided path or explore individual lessons freely.
+          </text>
+        </svg>
+        <figcaption id="hero-diagram-caption" class="hero__caption">
+          VisionLab pairs plain-English visual explanations with focused
+          interactive exploration so beginners understand why concepts work, not
+          just what they are called.
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="roadmap" class="section section--subtle" aria-labelledby="roadmap-heading">
+    <div class="container">
+      <SectionHeading
+        eyebrow="Learning Roadmap Preview"
+        headingId="roadmap-heading"
+        title="Five tracks from AI basics to computer vision and generative models"
+        description="This roadmap outlines the full five-track curriculum structure. Track cards below indicate planned learning stages while individual lessons are authored in upcoming packages."
+      />
+
+      <div class="tracks-grid">
+        {LEARNING_TRACKS.map((track) => (
+          <RoadmapTrackCard track={track} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section id="featured" class="section" aria-labelledby="featured-heading">
+    <div class="container">
+      <SectionHeading
+        eyebrow="Featured Learning Area"
+        headingId="featured-heading"
+        title="Designed for clarity, visual intuition, and honest exploration"
+        description="VisionLab combines a guided track sequence with self-contained lessons so learners can either follow a structured path or look up a specific idea."
+      />
+
+      <div class="featured-grid">
+        {featuredPrinciples.map((item) => (
+          <article class="feature-card">
+            <div class="feature-card__meta">
+              <StatusBadge variant="accent">{item.badge}</StatusBadge>
+            </div>
+            <h3 class="feature-card__title">{item.title}</h3>
+            <p class="feature-card__description">{item.description}</p>
+            <p class="feature-card__status">{item.status}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section
+    id="planned-sections"
+    class="section section--subtle"
+    aria-labelledby="planned-heading"
+  >
+    <div class="container">
+      <SectionHeading
+        eyebrow="Platform Status"
+        headingId="planned-heading"
+        title="Planned sections and rollout transparency"
+        description="Package 1 establishes the website shell, lesson schema, authoring template, and deployment configuration. Sections marked Coming soon will open as their lessons and interactive tools are completed."
+      />
+
+      <div class="status-grid">
+        {plannedSections.map((item) => (
+          <article class="status-card">
+            <div class="status-card__header">
+              <h3 class="status-card__title">{item.name}</h3>
+              <StatusBadge variant={item.variant}>{item.status}</StatusBadge>
+            </div>
+            <p class="status-card__detail">{item.detail}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</MainLayout>
+
+<style>
+  .hero {
+    padding-block: var(--space-10) var(--space-12);
+  }
+
+  @media (min-width: 768px) {
+    .hero {
+      padding-block: var(--space-12) var(--space-16);
+    }
+  }
+
+  .hero__grid {
+    display: grid;
+    gap: var(--space-8);
+    grid-template-columns: 1fr;
+    align-items: center;
+  }
+
+  @media (min-width: 960px) {
+    .hero__grid {
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: var(--space-10);
+    }
+  }
+
+  .hero__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+  }
+
+  .hero__title {
+    font-size: clamp(2.1rem, 4.4vw, 3.1rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin-bottom: var(--space-4);
+  }
+
+  .hero__tagline {
+    display: block;
+    margin-top: var(--space-2);
+    font-size: clamp(1.2rem, 2.2vw, 1.55rem);
+    font-weight: 700;
+    color: var(--color-accent);
+    letter-spacing: -0.015em;
+  }
+
+  .hero__intro {
+    font-size: 1.06rem;
+    line-height: 1.7;
+    max-width: 38rem;
+    margin-bottom: var(--space-6);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .hero__visual {
+    margin: 0;
+    padding: var(--space-4);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .hero__svg {
+    width: 100%;
+    height: auto;
+  }
+
+  .hero__caption {
+    margin-top: var(--space-3);
+    font-size: 0.88rem;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+  }
+
+  /* SVG theme-aware styling */
+  .diagram-frame {
+    fill: var(--color-bg-subtle);
+    stroke: var(--color-border);
+    stroke-width: 1.5;
+  }
+
+  .diagram-card {
+    fill: var(--color-surface);
+    stroke: var(--color-border);
+    stroke-width: 1.5;
+  }
+
+  .diagram-card--highlight {
+    stroke: var(--color-accent-border);
+  }
+
+  .diagram-connector {
+    stroke: var(--color-accent);
+  }
+
+  .diagram-pill-blue {
+    fill: var(--color-accent-soft);
+  }
+
+  .diagram-stroke-blue {
+    stroke: var(--color-accent);
+  }
+
+  .diagram-dot-blue {
+    fill: var(--color-accent);
+  }
+
+  .diagram-pill-teal {
+    fill: var(--color-teal-soft);
+  }
+
+  .diagram-stroke-teal {
+    stroke: var(--color-teal);
+  }
+
+  .diagram-footer-bar {
+    fill: var(--color-surface);
+    stroke: var(--color-border);
+    stroke-width: 1.25;
+  }
+
+  .diagram-label {
+    fill: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: 13.5px;
+    font-weight: 700;
+  }
+
+  .diagram-bar-title {
+    fill: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .diagram-sublabel {
+    fill: var(--color-text-secondary);
+    font-family: var(--font-sans);
+    font-size: 11.5px;
+    font-weight: 500;
+  }
+
+  /* Grids */
+  .tracks-grid {
+    display: grid;
+    gap: var(--space-5);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 680px) {
+    .tracks-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1040px) {
+    .tracks-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .featured-grid {
+    display: grid;
+    gap: var(--space-5);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 800px) {
+    .featured-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .feature-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xs);
+  }
+
+  .feature-card__title {
+    font-size: 1.12rem;
+    font-weight: 700;
+  }
+
+  .feature-card__description {
+    font-size: 0.95rem;
+  }
+
+  .feature-card__status {
+    margin-top: auto;
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-border);
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+  }
+
+  .status-grid {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 720px) {
+    .status-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .status-card {
+    padding: var(--space-5);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+  }
+
+  .status-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-2);
+  }
+
+  .status-card__title {
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+
+  .status-card__detail {
+    font-size: 0.93rem;
+  }
+</style>

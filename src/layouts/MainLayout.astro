@@ -1,0 +1,78 @@
+---
+import '../styles/tokens.css';
+import '../styles/global.css';
+import { withBase } from '../utils/url';
+import SiteHeader from '../components/layout/SiteHeader.astro';
+import SiteFooter from '../components/layout/SiteFooter.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'VisionLab — AI & Computer Vision Learning Hub',
+  description = 'See It. Try It. Understand It. A beginner-friendly learning hub for artificial intelligence and computer vision.',
+} = Astro.props;
+
+const faviconHref = withBase('/favicon.svg');
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href={faviconHref} />
+    <script is:inline>
+      (() => {
+        try {
+          const saved = window.localStorage.getItem('visionlab-theme');
+          if (saved === 'light' || saved === 'dark') {
+            document.documentElement.dataset.theme = saved;
+            return;
+          }
+          if (
+            window.matchMedia &&
+            window.matchMedia('(prefers-color-scheme: dark)').matches
+          ) {
+            document.documentElement.dataset.theme = 'dark';
+          }
+        } catch {
+          // Default to light theme when localStorage is inaccessible.
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <SiteHeader />
+    <main id="main-content" tabindex="-1">
+      <slot />
+    </main>
+    <SiteFooter />
+  </body>
+</html>
+
+<style>
+  .skip-link {
+    position: absolute;
+    top: -3rem;
+    left: var(--space-4);
+    z-index: 100;
+    padding: 0.6rem 1rem;
+    border-radius: var(--radius-md);
+    background-color: var(--color-accent);
+    color: var(--color-on-accent);
+    font-weight: 700;
+    text-decoration: none;
+    transition: top var(--transition-fast);
+  }
+
+  .skip-link:focus {
+    top: var(--space-3);
+  }
+</style>

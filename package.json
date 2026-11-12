@@ -1,0 +1,31 @@
+{
+  "name": "visionlab-ai-learning-hub",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "VisionLab — AI & Computer Vision Learning Hub: See It. Try It. Understand It.",
+  "engines": {
+    "node": ">=22.22.0",
+    "npm": ">=10.0.0"
+  },
+  "scripts": {
+    "dev": "node ./node_modules/astro/bin/astro.mjs dev",
+    "build": "node ./node_modules/astro/bin/astro.mjs build",
+    "preview": "node ./node_modules/astro/bin/astro.mjs preview",
+    "check": "node ./node_modules/astro/bin/astro.mjs check",
+    "astro": "node ./node_modules/astro/bin/astro.mjs"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "8.1.0",
+    "@astrojs/react": "7.1.0",
+    "astro": "7.4.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "typescript": "^6.0.3"
+  }
+}
